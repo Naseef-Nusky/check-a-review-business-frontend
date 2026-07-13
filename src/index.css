@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-50: #fff1f5;
+  --color-primary-100: #ffe4ec;
+  --color-primary-200: #ffc9d9;
+  --color-primary-300: #ff9ebb;
+  --color-primary-400: #ff6b9d;
+  --color-primary-500: #ff4081;
+  --color-primary-600: #e6366f;
+  --color-primary-700: #c42d5c;
+  --color-primary-800: #a2254b;
+  --color-primary-900: #861f3f;
+
+  --color-surface: #ffffff;
+  --color-surface-muted: #f8fafc;
+  --color-border: #e2e8f0;
+  --color-ink: #0f172a;
+  --color-ink-muted: #64748b;
+
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+
+  --shadow-soft: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px rgb(15 23 42 / 0.06);
+  --shadow-elevated: 0 4px 6px rgb(15 23 42 / 0.04), 0 20px 40px rgb(15 23 42 / 0.08);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-surface-muted text-ink antialiased;
+    font-family: var(--font-sans);
+  }
+
+  ::selection {
+    @apply bg-primary-100 text-primary-900;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-border bg-surface;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .input-field {
+    @apply w-full rounded-xl border border-border bg-white px-4 py-2.5 text-sm text-ink outline-none transition placeholder:text-ink-muted/70 focus:border-primary-400 focus:ring-4 focus:ring-primary-500/10;
+  }
+
+  .label-text {
+    @apply mb-1.5 block text-sm font-medium;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50;
+  }
+}
