@@ -19,13 +19,14 @@ async function request(endpoint, options = {}) {
     ...options,
   })
 
+  const json = await response.json().catch(() => ({ message: 'Request failed' }))
+
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'Request failed' }))
-    throw new ApiError(error.message || 'Request failed', response.status)
+    throw new ApiError(json.message || 'Request failed', response.status)
   }
 
   if (response.status === 204) return null
-  return response.json()
+  return json.data !== undefined ? json.data : json
 }
 
 export const api = {
@@ -34,6 +35,21 @@ export const api = {
   put: (endpoint, data) => request(endpoint, { method: 'PUT', body: JSON.stringify(data) }),
   patch: (endpoint, data) => request(endpoint, { method: 'PATCH', body: JSON.stringify(data) }),
   delete: (endpoint) => request(endpoint, { method: 'DELETE' }),
+}
+
+export const businessApi = {
+  login: (email, password) => api.post('/auth/login', { email, password }),
+  register: (data) => api.post('/auth/register', data),
+  me: () => api.get('/auth/me'),
+  getMyProfile: () => api.get('/businesses/my/profile'),
+  updateBusiness: (id, data) => api.put(`/businesses/${id}`, data),
+  getCategories: () => api.get('/businesses/categories'),
+  getReviews: (businessId) => api.get(`/reviews/business/${businessId}?limit=50`),
+  replyToReview: (reviewId, reply) => api.post(`/reviews/${reviewId}/reply`, { reply }),
+  getInvitations: (businessId) => api.get(`/reviews/invitations/${businessId}`),
+  sendInvitation: (businessId, email) => api.post('/reviews/invitations', { businessId, email }),
+  getAnalytics: (businessId) => api.get(`/businesses/${businessId}/analytics`),
+  getWidget: (businessId) => api.get(`/widget/${businessId}`),
 }
 
 export { ApiError }

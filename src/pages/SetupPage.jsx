@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { businessApi } from '../services/api'
 import { APP_NAME } from '../utils/constants'
 
 const steps = ['Business details', 'Contact', 'Account']
@@ -10,33 +11,63 @@ export default function SetupPage() {
   const [form, setForm] = useState({
     businessName: '',
     website: '',
+    mainCategoryId: '',
     category: '',
     email: '',
     phone: '',
     password: '',
   })
-  const { login } = useAuth()
+  const [categories, setCategories] = useState([])
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const { login, refreshBusiness, isAuthenticated } = useAuth()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (isAuthenticated) navigate('/dashboard', { replace: true })
+  }, [isAuthenticated, navigate])
+
+  useEffect(() => {
+    businessApi
+      .getCategories()
+      .then(setCategories)
+      .catch(() => setCategories([]))
+  }, [])
+
+  const subcategories = useMemo(() => {
+    const main = categories.find((item) => item.id === form.mainCategoryId)
+    return main?.subcategories || []
+  }, [categories, form.mainCategoryId])
 
   const update = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }))
 
-  const next = (e) => {
+  const next = async (e) => {
     e.preventDefault()
+    setError('')
     if (step < steps.length - 1) {
       setStep((s) => s + 1)
       return
     }
-    login(
-      {
-        id: Date.now(),
-        name: form.businessName,
+
+    setLoading(true)
+    try {
+      const { user, token } = await businessApi.register({
         email: form.email,
+        password: form.password,
+        name: form.businessName,
         role: 'business',
-        businessName: form.businessName,
-      },
-      'demo-business-token'
-    )
-    navigate('/')
+        category: form.category,
+        website: form.website || null,
+        phone: form.phone || null,
+      })
+      login(user, token)
+      await refreshBusiness()
+      navigate('/dashboard')
+    } catch (err) {
+      setError(err.message || 'Failed to create business account')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -56,6 +87,10 @@ export default function SetupPage() {
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-ink">{steps[step]}</h1>
 
         <form onSubmit={next} className="card mt-8 space-y-4 p-6">
+          {error && (
+            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+          )}
+
           {step === 0 && (
             <>
               <div>
@@ -64,11 +99,38 @@ export default function SetupPage() {
               </div>
               <div>
                 <label className="label-text text-slate-700" htmlFor="website">Website</label>
-                <input id="website" type="url" required className="input-field" value={form.website} onChange={update('website')} />
+                <input id="website" type="url" className="input-field" value={form.website} onChange={update('website')} placeholder="https://" />
               </div>
               <div>
-                <label className="label-text text-slate-700" htmlFor="category">Category</label>
-                <input id="category" required className="input-field" value={form.category} onChange={update('category')} />
+                <label className="label-text text-slate-700" htmlFor="mainCategory">Main category</label>
+                <select
+                  id="mainCategory"
+                  required
+                  className="input-field"
+                  value={form.mainCategoryId}
+                  onChange={(e) => setForm((prev) => ({ ...prev, mainCategoryId: e.target.value, category: '' }))}
+                >
+                  <option value="">Select main category</option>
+                  {categories.map((main) => (
+                    <option key={main.id} value={main.id}>{main.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="label-text text-slate-700" htmlFor="category">Subcategory</label>
+                <select
+                  id="category"
+                  required
+                  className="input-field"
+                  value={form.category}
+                  onChange={update('category')}
+                  disabled={!form.mainCategoryId}
+                >
+                  <option value="">Select subcategory</option>
+                  {subcategories.map((sub) => (
+                    <option key={sub.id} value={sub.name}>{sub.name}</option>
+                  ))}
+                </select>
               </div>
             </>
           )}
@@ -81,7 +143,7 @@ export default function SetupPage() {
               </div>
               <div>
                 <label className="label-text text-slate-700" htmlFor="phone">Phone</label>
-                <input id="phone" type="tel" required className="input-field" value={form.phone} onChange={update('phone')} />
+                <input id="phone" type="tel" className="input-field" value={form.phone} onChange={update('phone')} />
               </div>
             </>
           )}
@@ -95,14 +157,14 @@ export default function SetupPage() {
 
           <div className="flex justify-between gap-3 pt-2">
             {step > 0 ? (
-              <button type="button" className="btn-secondary" onClick={() => setStep((s) => s - 1)}>
+              <button type="button" className="btn-secondary" onClick={() => setStep((s) => s - 1)} disabled={loading}>
                 Back
               </button>
             ) : (
               <span />
             )}
-            <button type="submit" className="btn-primary">
-              {step === steps.length - 1 ? 'Create account' : 'Next'}
+            <button type="submit" className="btn-primary" disabled={loading}>
+              {loading ? 'Creating...' : step === steps.length - 1 ? 'Create account' : 'Next'}
             </button>
           </div>
         </form>

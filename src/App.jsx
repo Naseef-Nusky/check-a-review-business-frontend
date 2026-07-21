@@ -1,15 +1,28 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
+import LandingGate from './components/LandingGate'
+import MarketingLayout from './layouts/MarketingLayout'
 import PortalLayout from './layouts/PortalLayout'
 import LoginPage from './pages/LoginPage'
 import SetupPage from './pages/SetupPage'
 import DashboardPage from './pages/DashboardPage'
-import PlaceholderPage from './pages/PlaceholderPage'
+import ProfilePage from './pages/ProfilePage'
+import ReviewsPage from './pages/ReviewsPage'
+import InvitationsPage from './pages/InvitationsPage'
+import AnalyticsPage from './pages/AnalyticsPage'
+import WidgetPage from './pages/WidgetPage'
 
 function PublicOnly({ children }) {
-  const { isAuthenticated } = useAuth()
-  if (isAuthenticated) return <Navigate to="/" replace />
+  const { isAuthenticated, bootstrapping } = useAuth()
+  if (bootstrapping) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-950 text-sm text-slate-400">
+        Loading...
+      </div>
+    )
+  }
+  if (isAuthenticated) return <Navigate to="/dashboard" replace />
   return children
 }
 
@@ -18,6 +31,10 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          <Route element={<MarketingLayout />}>
+            <Route index element={<LandingGate />} />
+          </Route>
+
           <Route
             path="/login"
             element={
@@ -30,31 +47,13 @@ export default function App() {
 
           <Route element={<ProtectedRoute />}>
             <Route element={<PortalLayout />}>
-              <Route index element={<DashboardPage />} />
-              <Route
-                path="profile"
-                element={<PlaceholderPage title="Company profile" description="Update your public business details." />}
-              />
-              <Route
-                path="reviews"
-                element={<PlaceholderPage title="Reviews" description="Read and reply to customer reviews." />}
-              />
-              <Route
-                path="invitations"
-                element={<PlaceholderPage title="Invitations" description="Invite customers to leave feedback." />}
-              />
-              <Route
-                path="analytics"
-                element={<PlaceholderPage title="Analytics" description="Track ratings and trust trends." />}
-              />
-              <Route
-                path="widget"
-                element={<PlaceholderPage title="Widget" description="Embed reviews on your website." />}
-              />
-              <Route
-                path="settings"
-                element={<PlaceholderPage title="Settings" description="Manage account and notification preferences." />}
-              />
+              <Route path="dashboard" element={<DashboardPage />} />
+              <Route path="profile" element={<ProfilePage />} />
+              <Route path="reviews" element={<ReviewsPage />} />
+              <Route path="invitations" element={<InvitationsPage />} />
+              <Route path="analytics" element={<AnalyticsPage />} />
+              <Route path="widget" element={<WidgetPage />} />
+              <Route path="settings" element={<ProfilePage />} />
             </Route>
           </Route>
 

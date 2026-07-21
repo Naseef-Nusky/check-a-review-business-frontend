@@ -13,7 +13,7 @@ import { useAuth } from '../context/AuthContext'
 import { APP_NAME } from '../utils/constants'
 
 const navItems = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/profile', label: 'Company profile', icon: Building2 },
   { to: '/reviews', label: 'Reviews', icon: Star },
   { to: '/invitations', label: 'Invitations', icon: MessageSquare },
@@ -23,13 +23,13 @@ const navItems = [
 ]
 
 export default function PortalLayout() {
-  const { user, logout } = useAuth()
+  const { user, business, logout } = useAuth()
 
   return (
     <div className="min-h-screen bg-surface-muted lg:grid lg:grid-cols-[260px_1fr]">
       <aside className="border-b border-border bg-slate-950 text-white lg:min-h-screen lg:border-b-0 lg:border-r lg:border-slate-800">
         <div className="flex h-16 items-center px-5">
-          <Link to="/">
+          <Link to="/dashboard">
             <img src="/logo-check-a-review.png" alt={APP_NAME} className="h-8 w-auto object-contain" />
           </Link>
         </div>
@@ -68,7 +68,7 @@ export default function PortalLayout() {
         <header className="flex h-16 items-center justify-between border-b border-border bg-white px-4 sm:px-6">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-primary-600">Business portal</p>
-            <h1 className="text-sm font-semibold text-ink">{user?.businessName || 'Your company'}</h1>
+            <h1 className="text-sm font-semibold text-ink">{business?.name || user?.name || 'Your company'}</h1>
           </div>
         </header>
         <main className="p-4 sm:p-6 lg:p-8">

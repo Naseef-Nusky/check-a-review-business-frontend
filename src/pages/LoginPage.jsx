@@ -1,27 +1,34 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { businessApi, ApiError } from '../services/api'
 import { APP_NAME } from '../utils/constants'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const { login } = useAuth()
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const { login, refreshBusiness } = useAuth()
   const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    login(
-      {
-        id: 1,
-        name: 'Business Owner',
-        email,
-        role: 'business',
-        businessName: 'Demo Company',
-      },
-      'demo-business-token'
-    )
-    navigate('/')
+    setLoading(true)
+    setError('')
+    try {
+      const { user, token } = await businessApi.login(email, password)
+      if (user.role !== 'business') {
+        throw new ApiError('This portal is for business accounts only. Use the customer site to sign in.', 403)
+      }
+      login(user, token)
+      await refreshBusiness()
+      navigate('/dashboard')
+    } catch (err) {
+      setError(err.message || 'Login failed')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -34,6 +41,9 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="card space-y-4 p-6">
+          {error && (
+            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+          )}
           <div>
             <label htmlFor="email" className="label-text text-slate-700">Email</label>
             <input
@@ -43,6 +53,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="input-field"
+              placeholder="owner@company.com"
             />
           </div>
           <div>
@@ -56,8 +67,8 @@ export default function LoginPage() {
               className="input-field"
             />
           </div>
-          <button type="submit" className="btn-primary w-full">
-            Sign in
+          <button type="submit" className="btn-primary w-full" disabled={loading}>
+            {loading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
 
