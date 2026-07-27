@@ -1,6 +1,8 @@
 import { NavLink, Outlet, Link } from 'react-router-dom'
+import { useCallback, useEffect, useState } from 'react'
 import {
   BarChart3,
+  Bell,
   Building2,
   Code2,
   LayoutDashboard,
@@ -10,12 +12,14 @@ import {
   Star,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { businessApi } from '../services/api'
 import { APP_NAME } from '../utils/constants'
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/profile', label: 'Company profile', icon: Building2 },
   { to: '/reviews', label: 'Reviews', icon: Star },
+  { to: '/notifications', label: 'Notifications', icon: Bell },
   { to: '/invitations', label: 'Invitations', icon: MessageSquare },
   { to: '/analytics', label: 'Analytics', icon: BarChart3 },
   { to: '/widget', label: 'Widget', icon: Code2 },
@@ -24,6 +28,22 @@ const navItems = [
 
 export default function PortalLayout() {
   const { user, business, logout } = useAuth()
+  const [unreadCount, setUnreadCount] = useState(0)
+
+  const loadUnread = useCallback(async () => {
+    try {
+      const rows = await businessApi.getNotifications()
+      setUnreadCount((rows || []).filter((n) => !n.read).length)
+    } catch {
+      setUnreadCount(0)
+    }
+  }, [])
+
+  useEffect(() => {
+    loadUnread()
+    const timer = setInterval(loadUnread, 30000)
+    return () => clearInterval(timer)
+  }, [loadUnread])
 
   return (
     <div className="min-h-screen bg-surface-muted lg:grid lg:grid-cols-[260px_1fr]">
@@ -46,7 +66,12 @@ export default function PortalLayout() {
               }
             >
               <Icon className="h-4 w-4" strokeWidth={1.5} />
-              {label}
+              <span className="flex-1">{label}</span>
+              {to === '/notifications' && unreadCount > 0 ? (
+                <span className="rounded-full bg-primary-500 px-2 py-0.5 text-[11px] font-semibold text-white">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              ) : null}
             </NavLink>
           ))}
         </nav>
@@ -70,9 +95,21 @@ export default function PortalLayout() {
             <p className="text-xs font-semibold uppercase tracking-wide text-primary-600">Business portal</p>
             <h1 className="text-sm font-semibold text-ink">{business?.name || user?.name || 'Your company'}</h1>
           </div>
+          <Link
+            to="/notifications"
+            className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border text-slate-600 hover:bg-slate-50"
+            aria-label="Notifications"
+          >
+            <Bell className="h-4 w-4" strokeWidth={1.5} />
+            {unreadCount > 0 ? (
+              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary-600 px-1 text-[10px] font-semibold text-white">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            ) : null}
+          </Link>
         </header>
         <main className="p-4 sm:p-6 lg:p-8">
-          <Outlet />
+          <Outlet context={{ refreshUnread: loadUnread }} />
         </main>
       </div>
     </div>

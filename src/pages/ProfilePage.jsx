@@ -156,17 +156,34 @@ export default function ProfilePage() {
     setError('')
     setSuccess('')
     try {
+      const address = (form.address || form.location || '').trim()
+      let description = form.description.trim()
+      if (form.location) {
+        if (/Location:\s*.+/i.test(description)) {
+          description = description.replace(/Location:\s*.+/i, `Location: ${form.location}`)
+        } else if (description) {
+          description = `${description}\nLocation: ${form.location}`
+        } else {
+          description = `Location: ${form.location}`
+        }
+      }
+
       await businessApi.updateBusiness(business.id, {
         name: form.name.trim(),
         category: form.category,
-        description: form.description.trim(),
+        description,
         website: form.website.trim(),
         email: form.email.trim(),
         phone: form.phone.trim(),
-        address: (form.address || form.location || '').trim(),
+        address,
       })
       await refreshBusiness()
-      setSuccess('Company details saved')
+      setForm((prev) => ({
+        ...prev,
+        description,
+        address,
+      }))
+      setSuccess('Company details saved. Your public profile is updated.')
     } catch (err) {
       setError(err.message || 'Failed to update company details')
     } finally {
@@ -183,7 +200,7 @@ export default function ProfilePage() {
       <div className="mb-8">
         <h2 className="text-2xl font-semibold tracking-tight text-ink">Company profile</h2>
         <p className="mt-1 text-sm text-ink-muted">
-          Edit your company details anytime. Changes appear on your public Check A Review page.
+          All fields below are editable. Save anytime — changes appear on your public Check A Review page.
         </p>
       </div>
 
@@ -273,7 +290,6 @@ export default function ProfilePage() {
               className="input-field"
               value={form.category}
               onChange={update('category')}
-              disabled={!form.mainCategoryId && categoryOptions.length === 0}
             >
               <option value="">Select subcategory</option>
               {categoryOptions.map((sub) => (

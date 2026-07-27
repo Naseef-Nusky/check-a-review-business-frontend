@@ -58,6 +58,9 @@ export const businessApi = {
   sendInvitation: (businessId, email) => api.post('/reviews/invitations', { businessId, email }),
   getAnalytics: (businessId) => api.get(`/businesses/${businessId}/analytics`),
   getWidget: (businessId) => api.get(`/widget/${businessId}`),
+  getNotifications: () => api.get('/notifications'),
+  markNotificationRead: (id) => api.patch(`/notifications/${id}/read`),
+  markAllNotificationsRead: () => api.patch('/notifications/read-all'),
 }
 
 export { ApiError }

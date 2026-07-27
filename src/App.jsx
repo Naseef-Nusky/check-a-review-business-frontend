@@ -13,6 +13,7 @@ import ReviewsPage from './pages/ReviewsPage'
 import InvitationsPage from './pages/InvitationsPage'
 import AnalyticsPage from './pages/AnalyticsPage'
 import WidgetPage from './pages/WidgetPage'
+import NotificationsPage from './pages/NotificationsPage'
 
 function PublicOnly({ children }) {
   const { isAuthenticated, bootstrapping } = useAuth()
@@ -52,6 +53,7 @@ export default function App() {
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="reviews" element={<ReviewsPage />} />
+              <Route path="notifications" element={<NotificationsPage />} />
               <Route path="invitations" element={<InvitationsPage />} />
               <Route path="analytics" element={<AnalyticsPage />} />
               <Route path="widget" element={<WidgetPage />} />

@@ -8,6 +8,7 @@ export default function ReviewsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [replyDrafts, setReplyDrafts] = useState({})
+  const [editingId, setEditingId] = useState('')
   const [savingId, setSavingId] = useState('')
 
   const load = async () => {
@@ -29,17 +30,39 @@ export default function ReviewsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const sendReply = async (reviewId) => {
+  const startEdit = (review) => {
+    setEditingId(review.id)
+    setReplyDrafts((prev) => ({
+      ...prev,
+      [review.id]: review.business_reply || '',
+    }))
+  }
+
+  const cancelEdit = (reviewId) => {
+    setEditingId('')
+    setReplyDrafts((prev) => {
+      const next = { ...prev }
+      delete next[reviewId]
+      return next
+    })
+  }
+
+  const saveReply = async (reviewId, isEdit) => {
     const reply = String(replyDrafts[reviewId] || '').trim()
     if (!reply) return
     setSavingId(reviewId)
     setError('')
     try {
       await businessApi.replyToReview(reviewId, reply)
-      setReplyDrafts((prev) => ({ ...prev, [reviewId]: '' }))
+      setEditingId('')
+      setReplyDrafts((prev) => {
+        const next = { ...prev }
+        delete next[reviewId]
+        return next
+      })
       await load()
     } catch (err) {
-      setError(err.message || 'Failed to send reply')
+      setError(err.message || (isEdit ? 'Failed to update reply' : 'Failed to send reply'))
     } finally {
       setSavingId('')
     }
@@ -49,7 +72,7 @@ export default function ReviewsPage() {
     <div>
       <div className="mb-8">
         <h2 className="text-2xl font-semibold tracking-tight text-ink">Reviews</h2>
-        <p className="mt-1 text-sm text-ink-muted">Read and reply to published customer reviews.</p>
+        <p className="mt-1 text-sm text-ink-muted">Read, reply to, and edit replies on published customer reviews.</p>
       </div>
 
       {error && <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
@@ -60,43 +83,85 @@ export default function ReviewsPage() {
         <div className="card p-8 text-center text-sm text-ink-muted">No published reviews yet.</div>
       ) : (
         <div className="space-y-4">
-          {reviews.map((review) => (
-            <div key={review.id} className="card p-5">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <p className="font-semibold text-ink">{review.title}</p>
-                  <p className="mt-1 text-sm text-ink-muted">
-                    {review.author_name} · {review.rating}/5 · {new Date(review.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-              <p className="mt-3 text-sm leading-relaxed text-slate-700">{review.content}</p>
+          {reviews.map((review) => {
+            const hasReply = Boolean(review.business_reply)
+            const isEditing = editingId === review.id || !hasReply
 
-              {review.business_reply ? (
-                <div className="mt-4 rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                  <p className="font-medium text-ink">Your reply</p>
-                  <p className="mt-1">{review.business_reply}</p>
+            return (
+              <div key={review.id} className="card p-5">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="font-semibold text-ink">{review.title}</p>
+                    <p className="mt-1 text-sm text-ink-muted">
+                      {review.author_name} · {review.rating}/5 · {new Date(review.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
                 </div>
-              ) : (
-                <div className="mt-4 space-y-2">
-                  <textarea
-                    className="input-field min-h-[90px]"
-                    placeholder="Write a public reply..."
-                    value={replyDrafts[review.id] || ''}
-                    onChange={(e) => setReplyDrafts((prev) => ({ ...prev, [review.id]: e.target.value }))}
-                  />
-                  <button
-                    type="button"
-                    className="btn-primary"
-                    disabled={savingId === review.id}
-                    onClick={() => sendReply(review.id)}
-                  >
-                    {savingId === review.id ? 'Sending...' : 'Reply'}
-                  </button>
-                </div>
-              )}
-            </div>
-          ))}
+                <p className="mt-3 text-sm leading-relaxed text-slate-700">{review.content}</p>
+
+                {hasReply && !isEditing ? (
+                  <div className="mt-4 rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="font-medium text-ink">Your reply</p>
+                        <p className="mt-1 whitespace-pre-wrap">{review.business_reply}</p>
+                        {review.business_reply_at ? (
+                          <p className="mt-2 text-xs text-slate-400">
+                            Updated {new Date(review.business_reply_at).toLocaleDateString()}
+                          </p>
+                        ) : null}
+                      </div>
+                      <button
+                        type="button"
+                        className="shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                        onClick={() => startEdit(review)}
+                      >
+                        Edit reply
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-4 space-y-2">
+                    <label className="block text-sm font-medium text-ink">
+                      {hasReply ? 'Edit your reply' : 'Write a public reply'}
+                    </label>
+                    <textarea
+                      className="input-field min-h-[90px]"
+                      placeholder="Write a public reply..."
+                      value={replyDrafts[review.id] ?? (hasReply ? review.business_reply : '')}
+                      onChange={(e) => setReplyDrafts((prev) => ({ ...prev, [review.id]: e.target.value }))}
+                    />
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        className="btn-primary"
+                        disabled={savingId === review.id}
+                        onClick={() => saveReply(review.id, hasReply)}
+                      >
+                        {savingId === review.id
+                          ? hasReply
+                            ? 'Saving...'
+                            : 'Sending...'
+                          : hasReply
+                            ? 'Save changes'
+                            : 'Reply'}
+                      </button>
+                      {hasReply ? (
+                        <button
+                          type="button"
+                          className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                          disabled={savingId === review.id}
+                          onClick={() => cancelEdit(review.id)}
+                        >
+                          Cancel
+                        </button>
+                      ) : null}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
       )}
     </div>

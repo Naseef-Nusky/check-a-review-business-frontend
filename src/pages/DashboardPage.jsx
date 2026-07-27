@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Building2, MessageSquare, Star, TrendingUp } from 'lucide-react'
+import { Bell, MessageSquare, Star, TrendingUp } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { businessApi } from '../services/api'
 
 export default function DashboardPage() {
   const { business, refreshBusiness } = useAuth()
   const [reviews, setReviews] = useState([])
+  const [notifications, setNotifications] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -18,8 +19,14 @@ export default function DashboardPage() {
       try {
         const profile = business || (await refreshBusiness())
         if (!profile?.id) return
-        const result = await businessApi.getReviews(profile.id)
-        if (active) setReviews(result.reviews || [])
+        const [result, notes] = await Promise.all([
+          businessApi.getReviews(profile.id),
+          businessApi.getNotifications(),
+        ])
+        if (active) {
+          setReviews(result.reviews || [])
+          setNotifications(notes || [])
+        }
       } catch (err) {
         if (active) setError(err.message || 'Failed to load dashboard')
       } finally {
@@ -31,11 +38,13 @@ export default function DashboardPage() {
     }
   }, [business, refreshBusiness])
 
+  const unreadCount = notifications.filter((n) => !n.read).length
+
   const stats = [
     { label: 'Average rating', value: Number(business?.average_rating || 0).toFixed(1), icon: Star },
     { label: 'Total reviews', value: String(business?.review_count || 0), icon: MessageSquare },
     { label: 'Trust score', value: `${Math.round(Number(business?.trust_score || 0))}%`, icon: TrendingUp },
-    { label: 'Category', value: business?.category || '—', icon: Building2 },
+    { label: 'Unread alerts', value: String(unreadCount), icon: Bell },
   ]
 
   return (
@@ -47,12 +56,20 @@ export default function DashboardPage() {
             {business?.name ? `Overview for ${business.name}` : 'Overview of your reputation and review activity.'}
           </p>
         </div>
-        <Link
-          to="/profile"
-          className="inline-flex items-center justify-center rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-primary-700"
-        >
-          Edit company details
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            to="/notifications"
+            className="inline-flex items-center justify-center rounded-xl border border-border bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          >
+            Notifications{unreadCount > 0 ? ` (${unreadCount})` : ''}
+          </Link>
+          <Link
+            to="/profile"
+            className="inline-flex items-center justify-center rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-primary-700"
+          >
+            Edit company details
+          </Link>
+        </div>
       </div>
 
       {business && (
@@ -92,6 +109,34 @@ export default function DashboardPage() {
 
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
         <div className="card p-6">
+          <h3 className="font-semibold text-ink">Recent notifications</h3>
+          {loading ? (
+            <p className="mt-2 text-sm text-ink-muted">Loading...</p>
+          ) : notifications.length === 0 ? (
+            <p className="mt-2 text-sm text-ink-muted">No notifications yet. New and updated reviews will appear here.</p>
+          ) : (
+            <ul className="mt-4 space-y-3">
+              {notifications.slice(0, 5).map((note) => (
+                <li key={note.id} className="rounded-xl border border-border px-3 py-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="font-medium text-ink">{note.title}</p>
+                    {!note.read ? (
+                      <span className="rounded-full bg-primary-100 px-2 py-0.5 text-[11px] font-medium text-primary-700">
+                        New
+                      </span>
+                    ) : null}
+                  </div>
+                  <p className="mt-1 line-clamp-2 text-sm text-ink-muted">{note.message}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+          <Link to="/notifications" className="mt-4 inline-block text-sm font-medium text-primary-600 hover:text-primary-700">
+            View all notifications →
+          </Link>
+        </div>
+
+        <div className="card p-6">
           <h3 className="font-semibold text-ink">Recent reviews</h3>
           {loading ? (
             <p className="mt-2 text-sm text-ink-muted">Loading...</p>
@@ -113,23 +158,6 @@ export default function DashboardPage() {
           <Link to="/reviews" className="mt-4 inline-block text-sm font-medium text-primary-600 hover:text-primary-700">
             Manage reviews →
           </Link>
-        </div>
-        <div className="card p-6">
-          <h3 className="font-semibold text-ink">Quick actions</h3>
-          <ul className="mt-4 space-y-2 text-sm text-slate-600">
-            <li>
-              <Link className="text-primary-600 hover:text-primary-700" to="/invitations">Invite customers to leave a review</Link>
-            </li>
-            <li>
-              <Link className="text-primary-600 hover:text-primary-700" to="/reviews">Reply to customer feedback</Link>
-            </li>
-            <li>
-              <Link className="text-primary-600 hover:text-primary-700" to="/widget">Embed your review widget</Link>
-            </li>
-            <li>
-              <Link className="text-primary-600 hover:text-primary-700" to="/profile">Update company profile</Link>
-            </li>
-          </ul>
         </div>
       </div>
     </div>
