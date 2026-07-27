@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { businessApi, ApiError } from '../services/api'
 import { APP_NAME } from '../utils/constants'
+import PasswordInput from '../components/PasswordInput'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -19,7 +20,7 @@ export default function LoginPage() {
     try {
       const { user, token } = await businessApi.login(email, password)
       if (user.role !== 'business') {
-        throw new ApiError('This portal is for business accounts only. Use the customer site to sign in.', 403)
+        throw new ApiError('This portal is for business accounts only. Use the main website to sign in.', 403)
       }
       login(user, token)
       await refreshBusiness()
@@ -35,7 +36,9 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <img src="/logo-check-a-review.png" alt={APP_NAME} className="mx-auto h-10 w-auto object-contain" />
+          <Link to="/">
+            <img src="/logo-check-a-review.png" alt={APP_NAME} className="mx-auto h-10 w-auto object-contain" />
+          </Link>
           <h1 className="mt-6 text-2xl font-semibold text-white">Business portal</h1>
           <p className="mt-2 text-sm text-slate-400">Sign in to manage reviews, invitations, and reputation.</p>
         </div>
@@ -56,17 +59,13 @@ export default function LoginPage() {
               placeholder="owner@company.com"
             />
           </div>
-          <div>
-            <label htmlFor="password" className="label-text text-slate-700">Password</label>
-            <input
-              id="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="input-field"
-            />
-          </div>
+          <PasswordInput
+            id="password"
+            label="Password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
           <button type="submit" className="btn-primary w-full" disabled={loading}>
             {loading ? 'Signing in...' : 'Sign in'}
           </button>

@@ -40,12 +40,39 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h2 className="text-2xl font-semibold tracking-tight text-ink">Dashboard</h2>
-        <p className="mt-1 text-sm text-ink-muted">
-          {business?.name ? `Overview for ${business.name}` : 'Overview of your reputation and review activity.'}
-        </p>
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-2xl font-semibold tracking-tight text-ink">Dashboard</h2>
+          <p className="mt-1 text-sm text-ink-muted">
+            {business?.name ? `Overview for ${business.name}` : 'Overview of your reputation and review activity.'}
+          </p>
+        </div>
+        <Link
+          to="/profile"
+          className="inline-flex items-center justify-center rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-primary-700"
+        >
+          Edit company details
+        </Link>
       </div>
+
+      {business && (
+        <div className="card mb-6 p-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h3 className="font-semibold text-ink">Company details</h3>
+              <p className="mt-1 text-sm text-ink-muted">{business.name}</p>
+              <p className="mt-1 text-sm text-ink-muted">
+                {[business.category, business.website, business.email, business.phone]
+                  .filter(Boolean)
+                  .join(' · ') || 'Add your website, email, and phone on the profile page.'}
+              </p>
+            </div>
+            <Link to="/profile" className="text-sm font-medium text-primary-600 hover:text-primary-700">
+              Edit →
+            </Link>
+          </div>
+        </div>
+      )}
 
       {error && (
         <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>

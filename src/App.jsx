@@ -5,6 +5,7 @@ import LandingGate from './components/LandingGate'
 import MarketingLayout from './layouts/MarketingLayout'
 import PortalLayout from './layouts/PortalLayout'
 import LoginPage from './pages/LoginPage'
+import PricingPage from './pages/PricingPage'
 import SetupPage from './pages/SetupPage'
 import DashboardPage from './pages/DashboardPage'
 import ProfilePage from './pages/ProfilePage'
@@ -33,6 +34,7 @@ export default function App() {
         <Routes>
           <Route element={<MarketingLayout />}>
             <Route index element={<LandingGate />} />
+            <Route path="/pricing" element={<PricingPage />} />
           </Route>
 
           <Route

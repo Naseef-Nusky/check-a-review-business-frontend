@@ -29,7 +29,7 @@ export default function PortalLayout() {
     <div className="min-h-screen bg-surface-muted lg:grid lg:grid-cols-[260px_1fr]">
       <aside className="border-b border-border bg-slate-950 text-white lg:min-h-screen lg:border-b-0 lg:border-r lg:border-slate-800">
         <div className="flex h-16 items-center px-5">
-          <Link to="/dashboard">
+          <Link to="/">
             <img src="/logo-check-a-review.png" alt={APP_NAME} className="h-8 w-auto object-contain" />
           </Link>
         </div>
