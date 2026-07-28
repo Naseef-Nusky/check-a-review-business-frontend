@@ -36,16 +36,16 @@ export default function App() {
           <Route element={<MarketingLayout />}>
             <Route index element={<LandingGate />} />
             <Route path="/pricing" element={<PricingPage />} />
+            <Route
+              path="/login"
+              element={
+                <PublicOnly>
+                  <LoginPage />
+                </PublicOnly>
+              }
+            />
           </Route>
 
-          <Route
-            path="/login"
-            element={
-              <PublicOnly>
-                <LoginPage />
-              </PublicOnly>
-            }
-          />
           <Route path="/setup" element={<SetupPage />} />
 
           <Route element={<ProtectedRoute />}>

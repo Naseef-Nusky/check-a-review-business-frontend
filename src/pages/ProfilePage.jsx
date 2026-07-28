@@ -5,9 +5,48 @@ import { businessApi } from '../services/api'
 import { resolveMediaUrl } from '../utils/constants'
 import { BUSINESS_LOCATIONS } from '../utils/locations'
 
+const REVENUE_OPTIONS = ['Under $500K', '$500K - $4.99 million', '$5 million - $24.99 million', '$25 million+']
+const EMPLOYEE_OPTIONS = ['1-9', '10-49', '50-249', '250-999', '1000+']
+
 function parseLocationFromDescription(description = '') {
   const match = String(description).match(/Location:\s*(.+)/i)
   return match?.[1]?.split('\n')[0]?.trim() || ''
+}
+
+function parseFieldFromDescription(description = '', label) {
+  const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const match = String(description).match(new RegExp(`${escaped}:\\s*(.+)`, 'i'))
+  return match?.[1]?.split('\n')[0]?.trim() || ''
+}
+
+function parseProfileSummary(description = '') {
+  return String(description)
+    .split('\n')
+    .filter(
+      (line) =>
+        line.trim() &&
+        !/^(Location|Job title|Annual revenue|Employees|Contact):\s*/i.test(line.trim()),
+    )
+    .join(' ')
+    .trim()
+}
+
+function buildDescription({
+  summary = '',
+  location = '',
+  jobTitle = '',
+  annualRevenue = '',
+  employeeCount = '',
+  contactName = '',
+}) {
+  const parts = []
+  if (summary.trim()) parts.push(summary.trim())
+  if (location.trim()) parts.push(`Location: ${location.trim()}`)
+  if (jobTitle.trim()) parts.push(`Job title: ${jobTitle.trim()}`)
+  if (annualRevenue.trim()) parts.push(`Annual revenue: ${annualRevenue.trim()}`)
+  if (employeeCount.trim()) parts.push(`Employees: ${employeeCount.trim()}`)
+  if (contactName.trim()) parts.push(`Contact: ${contactName.trim()}`)
+  return parts.join('\n')
 }
 
 export default function ProfilePage() {
@@ -19,6 +58,10 @@ export default function ProfilePage() {
     mainCategoryId: '',
     category: '',
     description: '',
+    jobTitle: '',
+    annualRevenue: '',
+    employeeCount: '',
+    contactName: '',
     website: '',
     email: '',
     phone: '',
@@ -55,7 +98,11 @@ export default function ProfilePage() {
           location: locationFromDesc || profile?.address || '',
           mainCategoryId: matchingMain?.id || '',
           category: profile?.category || '',
-          description: profile?.description || '',
+          description: parseProfileSummary(profile?.description),
+          jobTitle: parseFieldFromDescription(profile?.description, 'Job title'),
+          annualRevenue: parseFieldFromDescription(profile?.description, 'Annual revenue'),
+          employeeCount: parseFieldFromDescription(profile?.description, 'Employees'),
+          contactName: parseFieldFromDescription(profile?.description, 'Contact'),
           website: profile?.website || '',
           email: profile?.email || '',
           phone: profile?.phone || '',
@@ -157,16 +204,14 @@ export default function ProfilePage() {
     setSuccess('')
     try {
       const address = (form.address || form.location || '').trim()
-      let description = form.description.trim()
-      if (form.location) {
-        if (/Location:\s*.+/i.test(description)) {
-          description = description.replace(/Location:\s*.+/i, `Location: ${form.location}`)
-        } else if (description) {
-          description = `${description}\nLocation: ${form.location}`
-        } else {
-          description = `Location: ${form.location}`
-        }
-      }
+      const description = buildDescription({
+        summary: form.description,
+        location: form.location,
+        jobTitle: form.jobTitle,
+        annualRevenue: form.annualRevenue,
+        employeeCount: form.employeeCount,
+        contactName: form.contactName,
+      })
 
       await businessApi.updateBusiness(business.id, {
         name: form.name.trim(),
@@ -303,15 +348,84 @@ export default function ProfilePage() {
 
         <div>
           <label className="label-text text-slate-700" htmlFor="description">
-            Description
+            Company profile
           </label>
-          <textarea
+          <input
             id="description"
-            className="input-field min-h-[120px]"
+            className="input-field"
             value={form.description}
             onChange={update('description')}
-            placeholder="Tell customers what your business does"
+            placeholder="Short one-line summary about your business"
           />
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label className="label-text text-slate-700" htmlFor="jobTitle">
+              Job title
+            </label>
+            <input
+              id="jobTitle"
+              className="input-field"
+              value={form.jobTitle}
+              onChange={update('jobTitle')}
+              placeholder="Owner, Founder, Manager"
+            />
+          </div>
+          <div>
+            <label className="label-text text-slate-700" htmlFor="contactName">
+              Contact name
+            </label>
+            <input
+              id="contactName"
+              className="input-field"
+              value={form.contactName}
+              onChange={update('contactName')}
+              placeholder="Primary contact person"
+            />
+          </div>
+          <div>
+            <label className="label-text text-slate-700" htmlFor="annualRevenue">
+              Annual revenue
+            </label>
+            <select
+              id="annualRevenue"
+              className="input-field"
+              value={form.annualRevenue}
+              onChange={update('annualRevenue')}
+            >
+              <option value="">Select annual revenue</option>
+              {REVENUE_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+              {form.annualRevenue && !REVENUE_OPTIONS.includes(form.annualRevenue) ? (
+                <option value={form.annualRevenue}>{form.annualRevenue}</option>
+              ) : null}
+            </select>
+          </div>
+          <div>
+            <label className="label-text text-slate-700" htmlFor="employeeCount">
+              Employees
+            </label>
+            <select
+              id="employeeCount"
+              className="input-field"
+              value={form.employeeCount}
+              onChange={update('employeeCount')}
+            >
+              <option value="">Select employee range</option>
+              {EMPLOYEE_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+              {form.employeeCount && !EMPLOYEE_OPTIONS.includes(form.employeeCount) ? (
+                <option value={form.employeeCount}>{form.employeeCount}</option>
+              ) : null}
+            </select>
+          </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">

@@ -53,6 +53,7 @@ export const businessApi = {
   getCategories: () => api.get('/businesses/categories'),
   getPricingContent: () => api.get('/businesses/pricing'),
   getReviews: (businessId) => api.get(`/reviews/business/${businessId}?limit=50`),
+  getReviewSummary: (businessId) => api.get(`/businesses/${businessId}/review-summary`),
   replyToReview: (reviewId, reply) => api.post(`/reviews/${reviewId}/reply`, { reply }),
   getInvitations: (businessId) => api.get(`/reviews/invitations/${businessId}`),
   sendInvitation: (businessId, email) => api.post('/reviews/invitations', { businessId, email }),

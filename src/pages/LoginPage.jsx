@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { businessApi, ApiError } from '../services/api'
-import { APP_NAME } from '../utils/constants'
+import { PUBLIC_SITE_URL } from '../utils/constants'
 import PasswordInput from '../components/PasswordInput'
 
 export default function LoginPage() {
@@ -33,51 +33,83 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4">
-      <div className="w-full max-w-md">
-        <div className="mb-8 text-center">
-          <Link to="/">
-            <img src="/logo-check-a-review.png" alt={APP_NAME} className="mx-auto h-10 w-auto object-contain" />
-          </Link>
-          <h1 className="mt-6 text-2xl font-semibold text-white">Business portal</h1>
-          <p className="mt-2 text-sm text-slate-400">Sign in to manage reviews, invitations, and reputation.</p>
-        </div>
+    <div className="bg-slate-100">
+      <section className="px-4 pb-16 pt-14 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-xl text-center">
+          <h1 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+            Manage reviews. Reply faster. Grow trust.
+          </h1>
 
-        <form onSubmit={handleSubmit} className="card space-y-4 p-6">
-          {error && (
-            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
-          )}
-          <div>
-            <label htmlFor="email" className="label-text text-slate-700">Email</label>
-            <input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="input-field"
-              placeholder="owner@company.com"
-            />
+          <div className="mt-10 rounded-2xl border border-slate-200 bg-white p-6 text-left shadow-sm sm:p-8">
+            <p className="text-center text-sm font-medium text-slate-600">
+              Log in to your business account
+            </p>
+
+            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+              {error && (
+                <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  {error}
+                </div>
+              )}
+              <div>
+                <label htmlFor="email" className="label-text text-slate-700">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="input-field"
+                  placeholder="owner@company.com"
+                />
+              </div>
+              <PasswordInput
+                id="password"
+                label="Password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="submit"
+                className="btn-primary w-full rounded-full"
+                disabled={loading}
+              >
+                {loading ? 'Signing in...' : 'Log in'}
+              </button>
+              <p className="text-center text-sm text-slate-500">
+                Need an account?{' '}
+                <Link to="/setup" className="font-medium text-primary-700 hover:text-primary-800">
+                  Set up your business
+                </Link>
+              </p>
+            </form>
           </div>
-          <PasswordInput
-            id="password"
-            label="Password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button type="submit" className="btn-primary w-full" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign in'}
-          </button>
-        </form>
 
-        <p className="mt-6 text-center text-sm text-slate-400">
-          Need an account?{' '}
-          <Link to="/setup" className="font-medium text-primary-300 hover:text-primary-200">
-            Set up your business
-          </Link>
-        </p>
-      </div>
+          <div className="mt-14">
+            <h2 className="text-xl font-semibold text-slate-900">Looking for a customer account?</h2>
+            <p className="mt-2 text-sm text-slate-600">
+              Read reviews, write reviews, and manage your personal profile on the main site
+            </p>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <a
+                href={`${PUBLIC_SITE_URL}/login`}
+                className="rounded-full bg-primary-500 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-600"
+              >
+                Customer log in
+              </a>
+              <a
+                href={`${PUBLIC_SITE_URL}/register`}
+                className="rounded-full border-2 border-primary-500 px-6 py-2.5 text-sm font-semibold text-primary-600 transition hover:bg-primary-50"
+              >
+                Create account
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

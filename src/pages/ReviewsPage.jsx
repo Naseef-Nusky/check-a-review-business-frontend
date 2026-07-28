@@ -2,9 +2,23 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { businessApi } from '../services/api'
 
+function sentimentLabel(sentiment) {
+  switch (sentiment) {
+    case 'positive':
+      return { text: 'Mostly positive', className: 'bg-emerald-50 text-emerald-700' }
+    case 'negative':
+      return { text: 'Mostly negative', className: 'bg-red-50 text-red-700' }
+    case 'mixed':
+      return { text: 'Mixed', className: 'bg-amber-50 text-amber-800' }
+    default:
+      return { text: 'Neutral', className: 'bg-slate-100 text-slate-700' }
+  }
+}
+
 export default function ReviewsPage() {
   const { business, refreshBusiness } = useAuth()
   const [reviews, setReviews] = useState([])
+  const [summary, setSummary] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [replyDrafts, setReplyDrafts] = useState({})
@@ -16,8 +30,12 @@ export default function ReviewsPage() {
     setError('')
     try {
       const profile = business || (await refreshBusiness())
-      const result = await businessApi.getReviews(profile.id)
+      const [result, aiSummary] = await Promise.all([
+        businessApi.getReviews(profile.id),
+        businessApi.getReviewSummary(profile.id).catch(() => null),
+      ])
       setReviews(result.reviews || [])
+      setSummary(aiSummary)
     } catch (err) {
       setError(err.message || 'Failed to load reviews')
     } finally {
@@ -76,6 +94,28 @@ export default function ReviewsPage() {
       </div>
 
       {error && <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+
+      {!loading && summary?.summary ? (
+        <div className="card mb-6 border-primary-100 bg-gradient-to-br from-primary-50/70 via-white to-slate-50 p-5">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-primary-600">AI review summary</p>
+            <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${sentimentLabel(summary.sentiment).className}`}>
+              {sentimentLabel(summary.sentiment).text}
+            </span>
+          </div>
+          <p className="mt-3 text-sm leading-relaxed text-ink">{summary.summary}</p>
+          {(summary.cons?.length > 0) && (
+            <div className="mt-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">Cons</p>
+              <ul className="mt-1.5 space-y-1 text-sm text-ink">
+                {summary.cons.map((item) => (
+                  <li key={item}>• {item}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      ) : null}
 
       {loading ? (
         <p className="text-sm text-ink-muted">Loading reviews...</p>
