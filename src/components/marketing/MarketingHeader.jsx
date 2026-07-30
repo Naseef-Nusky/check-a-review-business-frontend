@@ -1,7 +1,7 @@
 import { Fragment, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronDown, Menu, X } from 'lucide-react'
-import { APP_NAME, PUBLIC_SITE_URL } from '../../utils/constants'
+import { APP_NAME } from '../../utils/constants'
 
 const menuGroups = [
   {
@@ -10,19 +10,9 @@ const menuGroups = [
       {
         title: 'By business goal',
         items: [
-          { label: 'Engage with feedback', href: '/#products' },
-          { label: 'Accelerate conversions', href: '/pricing' },
-          { label: 'Improve with insights', href: '/#integrations' },
-          { label: 'Drive revenue growth', href: '/#resources' },
-          { label: 'Industry: Insurance', href: '/pricing' },
-          { label: 'Industry: Retail', href: '/pricing' },
-        ],
-      },
-      {
-        title: 'By business size',
-        items: [
-          { label: 'Small and scaling businesses', href: '/pricing' },
-          { label: 'Enterprises', href: '/pricing' },
+          { label: 'Engage with feedback', href: '/solutions/engage-with-feedback' },
+          { label: 'Accelerate conversions', href: '/solutions/accelerate-conversions' },
+          { label: 'Improve with insights', href: '/solutions/improve-with-insights' },
         ],
       },
     ],
@@ -31,83 +21,21 @@ const menuGroups = [
     label: 'Features',
     sections: [
       {
-        title: 'Invite reviews',
-        items: [
-          { label: 'Service reviews', href: '/#products' },
-          { label: 'Product reviews', href: '/#products' },
-          { label: 'Location reviews', href: '/#products' },
-          { label: 'Review invitations', href: '/#products' },
-        ],
-      },
-      {
         title: 'Engage with feedback',
         items: [
-          { label: 'Profile page', href: '/#products' },
-          { label: 'Respond to reviews', href: '/#products' },
-        ],
-      },
-      {
-        title: 'Accelerate conversions',
-        items: [
-          { label: 'Review SEO & AI Discovery', href: '/#integrations' },
-          { label: 'Check A Review widgets', href: '/#integrations' },
-          { label: 'Social media tools', href: '/#integrations' },
-          { label: 'Marketing assets', href: '/#integrations' },
-        ],
-      },
-      {
-        title: 'Improve with insights',
-        items: [
-          { label: 'Review spotlight', href: '/#resources' },
-          { label: 'Market insights', href: '/#resources' },
-          { label: 'Review insights', href: '/#resources' },
-          { label: 'Data and analytics', href: '/#resources' },
-          { label: 'Review tagging', href: '/#resources' },
-          { label: 'Visitor insights', href: '/#resources' },
+          { label: 'Profile page', href: '/features/profile-page' },
+          { label: 'Respond to reviews', href: '/features/respond-to-reviews' },
         ],
       },
     ],
+  },
+  {
+    label: 'How it works',
+    href: '/how-it-works',
   },
   {
     label: 'Pricing',
     href: '/pricing',
-  },
-  {
-    label: 'Resources',
-    sections: [
-      {
-        items: [
-          { label: 'Blog', href: '#resources' },
-          { label: 'Customer stories', href: '/#resources' },
-          { label: 'Guides and reports', href: '/#resources' },
-          { label: 'Webinars and videos', href: '/#resources' },
-          { label: 'Help Center', href: '/#resources' },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'Partners',
-    sections: [
-      {
-        items: [
-          { label: 'Referral program', href: '/#resources' },
-          { label: 'Integrations', href: '/#integrations' },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'Company',
-    sections: [
-      {
-        items: [
-          { label: 'About Check A Review', href: '/#resources' },
-          { label: 'Check A Review for Consumers', href: PUBLIC_SITE_URL },
-          { label: 'Check A Review Data Solutions', href: '/pricing' },
-        ],
-      },
-    ],
   },
 ]
 

@@ -7,6 +7,12 @@ import PortalLayout from './layouts/PortalLayout'
 import LoginPage from './pages/LoginPage'
 import PricingPage from './pages/PricingPage'
 import SetupPage from './pages/SetupPage'
+import HowItWorksPage from './pages/HowItWorksPage'
+import EngageWithFeedbackPage from './pages/solutions/EngageWithFeedbackPage'
+import AccelerateConversionsPage from './pages/solutions/AccelerateConversionsPage'
+import ImproveWithInsightsPage from './pages/solutions/ImproveWithInsightsPage'
+import RespondToReviewsPage from './pages/features/RespondToReviewsPage'
+import ProfilePageCustomizationPage from './pages/features/ProfilePageCustomizationPage'
 import DashboardPage from './pages/DashboardPage'
 import ProfilePage from './pages/ProfilePage'
 import ReviewsPage from './pages/ReviewsPage'
@@ -36,6 +42,12 @@ export default function App() {
           <Route element={<MarketingLayout />}>
             <Route index element={<LandingGate />} />
             <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/how-it-works" element={<HowItWorksPage />} />
+            <Route path="/solutions/engage-with-feedback" element={<EngageWithFeedbackPage />} />
+            <Route path="/solutions/accelerate-conversions" element={<AccelerateConversionsPage />} />
+            <Route path="/solutions/improve-with-insights" element={<ImproveWithInsightsPage />} />
+            <Route path="/features/respond-to-reviews" element={<RespondToReviewsPage />} />
+            <Route path="/features/profile-page" element={<ProfilePageCustomizationPage />} />
             <Route
               path="/login"
               element={
@@ -44,9 +56,15 @@ export default function App() {
                 </PublicOnly>
               }
             />
+            <Route
+              path="/setup"
+              element={
+                <PublicOnly>
+                  <SetupPage />
+                </PublicOnly>
+              }
+            />
           </Route>
-
-          <Route path="/setup" element={<SetupPage />} />
 
           <Route element={<ProtectedRoute />}>
             <Route element={<PortalLayout />}>

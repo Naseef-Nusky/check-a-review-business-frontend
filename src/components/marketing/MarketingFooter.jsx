@@ -5,28 +5,28 @@ const columns = [
   {
     title: 'About us',
     links: [
+      { label: 'How it works', href: '/how-it-works' },
       { label: 'Our story', href: '#' },
       { label: 'Press', href: '#' },
       { label: 'Careers', href: '#' },
-      { label: 'Contact', href: '#' },
     ],
   },
   {
     title: 'Product',
     links: [
-      { label: 'Review management', href: '/#products' },
-      { label: 'Invitations', href: '/#products' },
-      { label: 'Analytics', href: '/#resources' },
-      { label: 'Widgets', href: '/#integrations' },
+      { label: 'Respond to reviews', href: '/features/respond-to-reviews' },
+      { label: 'Profile page', href: '/features/profile-page' },
+      { label: 'Invitations', href: '/how-it-works' },
+      { label: 'Widgets', href: '/solutions/accelerate-conversions' },
     ],
   },
   {
-    title: 'Business',
+    title: 'Solutions',
     links: [
+      { label: 'Engage with feedback', href: '/solutions/engage-with-feedback' },
+      { label: 'Accelerate conversions', href: '/solutions/accelerate-conversions' },
+      { label: 'Improve with insights', href: '/solutions/improve-with-insights' },
       { label: 'Pricing', href: '/pricing' },
-      { label: 'Enterprise', href: '/pricing' },
-      { label: 'Partners', href: '#' },
-      { label: 'Developers', href: '#' },
     ],
   },
   {

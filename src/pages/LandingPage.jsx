@@ -39,8 +39,6 @@ const growthFeatures = [
   },
 ]
 
-const integrations = ['Salesforce', 'HubSpot', 'Zendesk', 'Shopify', 'Slack', 'Google']
-
 const stories = [
   {
     title: 'How local retailers use reviews to win new customers',
@@ -350,23 +348,6 @@ export default function LandingPage() {
               Learn more
             </Link>
           </div>
-        </div>
-      </section>
-
-      {/* Integrations */}
-      <section id="integrations" className="py-20">
-        <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-semibold text-slate-900 sm:text-3xl">We easily integrate with your existing tools</h2>
-          <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-            {integrations.map((name) => (
-              <div key={name} className="flex h-20 items-center justify-center rounded-2xl border border-border bg-white text-sm font-semibold text-slate-500 shadow-sm">
-                {name}
-              </div>
-            ))}
-          </div>
-          <Link to="/setup" className="mt-10 inline-flex rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
-            View all integrations
-          </Link>
         </div>
       </section>
 

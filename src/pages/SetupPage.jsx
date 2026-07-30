@@ -16,7 +16,7 @@ const phoneCodes = ['+1', '+44', '+61', '+91', '+971']
 
 function ProgressSteps({ step }) {
   return (
-    <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-white/60">
+    <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3 text-sm text-slate-500">
       {steps.map((label, index) => {
         const complete = index < step
         const current = index === step
@@ -27,13 +27,13 @@ function ProgressSteps({ step }) {
                 complete
                   ? 'border-primary-500 bg-primary-500 text-white'
                   : current
-                    ? 'border-primary-400 bg-primary-400 text-white'
-                    : 'border-white/30 bg-white/10 text-white/70'
+                    ? 'border-primary-500 bg-primary-50 text-primary-700'
+                    : 'border-slate-300 bg-white text-slate-500'
               }`}
             >
               {complete ? <CheckCircle2 className="h-3.5 w-3.5" /> : index + 1}
             </span>
-            <span className={current ? 'font-semibold text-white' : ''}>{label}</span>
+            <span className={current ? 'font-semibold text-slate-900' : ''}>{label}</span>
           </div>
         )
       })}
@@ -158,13 +158,20 @@ export default function SetupPage() {
 
     setLoading(true)
     try {
+      const websiteValue = form.website.trim()
+      const website = websiteValue
+        ? /^https?:\/\//i.test(websiteValue)
+          ? websiteValue
+          : `https://${websiteValue}`
+        : null
+
       const { user, token } = await businessApi.register({
         email: form.email,
         password: form.password,
         name: form.businessName,
         role: 'business',
         category: form.category,
-        website: form.website || null,
+        website,
         phone: `${form.phoneCode} ${form.phone}`.trim() || null,
         description: `Location: ${form.location}
 Job title: ${form.jobTitle}
@@ -191,39 +198,35 @@ Contact: ${form.firstName} ${form.lastName}`.trim(),
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="border-b border-primary-800/30 bg-gradient-to-r from-slate-950 via-slate-950 to-primary-900 px-6 py-6 lg:px-10">
-        <div className="mx-auto flex max-w-4xl flex-col items-center gap-5 text-center">
-          <Link to="/">
-            <img src="/logo-check-a-review.png" alt={APP_NAME} className="h-10 w-auto object-contain" />
-          </Link>
-          <ProgressSteps step={step} />
-        </div>
-      </header>
+    <div className="bg-slate-100">
+      <section className="px-4 pb-16 pt-10 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl">
+          <div className="mb-8">
+            <ProgressSteps step={step} />
+          </div>
 
-      <main className="mx-auto max-w-4xl px-6 pb-16 pt-10 lg:px-10">
-        <div className="mx-auto max-w-[30rem]">
-            <h1 className="text-center text-3xl font-semibold leading-tight tracking-tight text-slate-900 sm:text-4xl">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+            <h1 className="text-center text-2xl font-semibold leading-tight tracking-tight text-slate-900 sm:text-3xl">
               {step === 0 && "First, let's add your business details"}
               {step === 1 && 'More details can help us customize your experience'}
               {step === 2 && 'Now, add your personal details so we know who you are'}
               {step === 3 && 'We need to send you a link to activate your account'}
             </h1>
 
-            <p className="mt-5 text-center text-base text-slate-600">
+            <p className="mt-4 text-center text-sm text-slate-600">
               Already have an account?{' '}
               <Link to="/login" className="font-medium text-primary-600 underline-offset-4 hover:underline">
                 Log in here
               </Link>
             </p>
 
-            <form onSubmit={next} className="mt-10 space-y-6">
+            <form onSubmit={next} className="mt-8 space-y-6">
               {error ? (
                 <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
               ) : null}
 
               {step === 0 && (
-                <>
+                <div className="grid gap-5 sm:grid-cols-2">
                   <div>
                     <label className="label-text text-slate-700" htmlFor="location">Business location</label>
                     <div className="relative">
@@ -242,7 +245,7 @@ Contact: ${form.firstName} ${form.lastName}`.trim(),
                     <p className="mt-2 text-xs text-slate-400">This helps customers find and trust your business.</p>
                   </div>
 
-                  <div>
+                  <div className="sm:col-span-2">
                     <label className="label-text text-slate-700" htmlFor="logo">Business logo</label>
                     <LogoUploader
                       valueFile={logoFile}
@@ -255,7 +258,17 @@ Contact: ${form.firstName} ${form.lastName}`.trim(),
 
                   <div>
                     <label className="label-text text-slate-700" htmlFor="website">Business website</label>
-                    <input id="website" type="url" className="input-field" value={form.website} onChange={update('website')} placeholder="yourbusiness.com" />
+                    <input
+                      id="website"
+                      type="text"
+                      className="input-field"
+                      value={form.website}
+                      onChange={update('website')}
+                      placeholder="yourbusiness.com"
+                      inputMode="url"
+                      autoComplete="url"
+                    />
+                    <p className="mt-2 text-xs text-slate-400">Enter your website address only, e.g. yourbusiness.com</p>
                   </div>
 
                   <div>
@@ -276,7 +289,7 @@ Contact: ${form.firstName} ${form.lastName}`.trim(),
                     </div>
                   </div>
 
-                  <div>
+                  <div className="sm:col-span-2">
                     <label className="label-text text-slate-700" htmlFor="category">Subcategory</label>
                     <div className="relative">
                       <select
@@ -294,12 +307,12 @@ Contact: ${form.firstName} ${form.lastName}`.trim(),
                       <SelectChevron />
                     </div>
                   </div>
-                </>
+                </div>
               )}
 
               {step === 1 && (
-                <>
-                  <div>
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <div className="sm:col-span-2">
                     <label className="label-text text-slate-700" htmlFor="jobTitle">Your job title</label>
                     <input id="jobTitle" className="input-field" value={form.jobTitle} onChange={update('jobTitle')} placeholder="Marketing manager" />
                   </div>
@@ -329,11 +342,11 @@ Contact: ${form.firstName} ${form.lastName}`.trim(),
                       <SelectChevron />
                     </div>
                   </div>
-                </>
+                </div>
               )}
 
               {step === 2 && (
-                <>
+                <div className="grid gap-5 sm:grid-cols-2">
                   <div>
                     <label className="label-text text-slate-700" htmlFor="firstName">First name</label>
                     <input id="firstName" className="input-field" value={form.firstName} onChange={update('firstName')} />
@@ -344,7 +357,7 @@ Contact: ${form.firstName} ${form.lastName}`.trim(),
                     <input id="lastName" className="input-field" value={form.lastName} onChange={update('lastName')} />
                   </div>
 
-                  <div>
+                  <div className="sm:col-span-2">
                     <label className="label-text text-slate-700" htmlFor="phone">Phone number</label>
                     <div className="grid grid-cols-[88px_minmax(0,1fr)] gap-3">
                       <div className="relative">
@@ -358,27 +371,29 @@ Contact: ${form.firstName} ${form.lastName}`.trim(),
                       <input id="phone" type="tel" className="input-field" value={form.phone} onChange={update('phone')} />
                     </div>
                   </div>
-                </>
+                </div>
               )}
 
               {step === 3 && (
-                <>
+                <div className="grid gap-5 sm:grid-cols-2">
                   <div>
                     <label className="label-text text-slate-700" htmlFor="email">Email address</label>
                     <input id="email" type="email" className="input-field" value={form.email} onChange={update('email')} placeholder="name@yourbusiness.com" />
                     <p className="mt-2 text-sm text-slate-500">
-                      Use an email that matches your website domain when possible to help verify your business faster.
+                      Use an email that matches your website domain when possible.
                     </p>
                   </div>
 
-                  <PasswordInput
-                    id="password"
-                    label="Create password"
-                    minLength={6}
-                    value={form.password}
-                    onChange={update('password')}
-                  />
-                </>
+                  <div>
+                    <PasswordInput
+                      id="password"
+                      label="Create password"
+                      minLength={6}
+                      value={form.password}
+                      onChange={update('password')}
+                    />
+                  </div>
+                </div>
               )}
 
               <div className="flex items-center justify-between gap-4 pt-2">
@@ -394,12 +409,13 @@ Contact: ${form.firstName} ${form.lastName}`.trim(),
                 </button>
               </div>
 
-              <p className="pt-4 text-xs leading-relaxed text-slate-500">
+              <p className="pt-2 text-xs leading-relaxed text-slate-500">
                 By submitting this form, {APP_NAME} will use your contact details to discuss our products and services. We collect, use, and protect your personal data in line with our privacy policy.
               </p>
             </form>
+          </div>
         </div>
-      </main>
+      </section>
 
       {showPlusModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/35 px-4">
