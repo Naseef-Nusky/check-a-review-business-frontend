@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { businessApi, ApiError } from '../services/api'
 import { PUBLIC_SITE_URL } from '../utils/constants'
@@ -9,9 +9,19 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [info, setInfo] = useState('')
   const [loading, setLoading] = useState(false)
   const { login, refreshBusiness } = useAuth()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+
+  useEffect(() => {
+    const emailFromQuery = searchParams.get('email')
+    if (emailFromQuery) setEmail(emailFromQuery)
+    if (searchParams.get('verified') === '1') {
+      setInfo('Email verified. Please log in to continue.')
+    }
+  }, [searchParams])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -26,6 +36,10 @@ export default function LoginPage() {
       await refreshBusiness()
       navigate('/dashboard')
     } catch (err) {
+      if (err.code === 'EMAIL_NOT_VERIFIED') {
+        navigate(`/verify-email?email=${encodeURIComponent(email)}`)
+        return
+      }
       setError(err.message || 'Login failed')
     } finally {
       setLoading(false)
@@ -49,6 +63,11 @@ export default function LoginPage() {
               {error && (
                 <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                   {error}
+                </div>
+              )}
+              {info && (
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                  {info}
                 </div>
               )}
               <div>
@@ -91,20 +110,21 @@ export default function LoginPage() {
           <div className="mt-14">
             <h2 className="text-xl font-semibold text-slate-900">Looking for a customer account?</h2>
             <p className="mt-2 text-sm text-slate-600">
-              Read reviews, write reviews, and manage your personal profile on the main site
+              Reviewer and business logins are separate. You can keep a reviewer account and also create a business
+              account with the same email.
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
               <a
                 href={`${PUBLIC_SITE_URL}/login`}
                 className="rounded-full bg-primary-500 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-600"
               >
-                Customer log in
+                Reviewer log in
               </a>
               <a
                 href={`${PUBLIC_SITE_URL}/register`}
                 className="rounded-full border-2 border-primary-500 px-6 py-2.5 text-sm font-semibold text-primary-600 transition hover:bg-primary-50"
               >
-                Create account
+                Create reviewer account
               </a>
             </div>
           </div>

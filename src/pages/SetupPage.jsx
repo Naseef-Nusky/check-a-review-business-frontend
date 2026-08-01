@@ -165,7 +165,7 @@ export default function SetupPage() {
           : `https://${websiteValue}`
         : null
 
-      const { user, token } = await businessApi.register({
+      const result = await businessApi.register({
         email: form.email,
         password: form.password,
         name: form.businessName,
@@ -179,7 +179,14 @@ Annual revenue: ${form.annualRevenue}
 Employees: ${form.employeeCount}
 Contact: ${form.firstName} ${form.lastName}`.trim(),
       })
-      login(user, token)
+
+      if (result.requiresEmailVerification) {
+        // Logo can be uploaded from the profile page after email verification.
+        navigate(`/verify-email?email=${encodeURIComponent(form.email)}`)
+        return
+      }
+
+      login(result.user, result.token)
       const profile = await refreshBusiness()
       if (logoFile && profile?.id) {
         try {
@@ -214,10 +221,11 @@ Contact: ${form.firstName} ${form.lastName}`.trim(),
             </h1>
 
             <p className="mt-4 text-center text-sm text-slate-600">
-              Already have an account?{' '}
+              Already have a business account?{' '}
               <Link to="/login" className="font-medium text-primary-600 underline-offset-4 hover:underline">
                 Log in here
               </Link>
+              . Reviewer accounts are separate — you can use the same email for both.
             </p>
 
             <form onSubmit={next} className="mt-8 space-y-6">
@@ -392,6 +400,11 @@ Contact: ${form.firstName} ${form.lastName}`.trim(),
                       value={form.password}
                       onChange={update('password')}
                     />
+                  </div>
+
+                  <div className="sm:col-span-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                    After you create your account, we will email you a 6-digit verification code. Your business listing
+                    is also reviewed by an administrator before it appears in public search.
                   </div>
                 </div>
               )}

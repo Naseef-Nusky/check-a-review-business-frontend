@@ -7,6 +7,7 @@ import PortalLayout from './layouts/PortalLayout'
 import LoginPage from './pages/LoginPage'
 import PricingPage from './pages/PricingPage'
 import SetupPage from './pages/SetupPage'
+import VerifyEmailPage from './pages/VerifyEmailPage'
 import HowItWorksPage from './pages/HowItWorksPage'
 import EngageWithFeedbackPage from './pages/solutions/EngageWithFeedbackPage'
 import AccelerateConversionsPage from './pages/solutions/AccelerateConversionsPage'
@@ -53,6 +54,14 @@ export default function App() {
               element={
                 <PublicOnly>
                   <LoginPage />
+                </PublicOnly>
+              }
+            />
+            <Route
+              path="/verify-email"
+              element={
+                <PublicOnly>
+                  <VerifyEmailPage />
                 </PublicOnly>
               }
             />

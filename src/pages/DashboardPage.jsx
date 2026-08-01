@@ -72,6 +72,29 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {error && (
+        <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+      )}
+
+      {business?.status === 'pending' && (
+        <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <p className="font-semibold">Your listing is awaiting admin approval</p>
+          <p className="mt-1 text-amber-800/90">
+            You can finish your profile and prepare invitations, but your business will not appear in public search
+            until an administrator approves it.
+          </p>
+        </div>
+      )}
+
+      {business?.status === 'rejected' && (
+        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          <p className="font-semibold">Your listing was not approved</p>
+          <p className="mt-1">
+            Update your company details and contact support if you need help getting approved.
+          </p>
+        </div>
+      )}
+
       {business && (
         <div className="card mb-6 p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -89,10 +112,6 @@ export default function DashboardPage() {
             </Link>
           </div>
         </div>
-      )}
-
-      {error && (
-        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
       )}
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
