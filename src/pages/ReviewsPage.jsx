@@ -89,8 +89,11 @@ export default function ReviewsPage() {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-2xl font-semibold tracking-tight text-ink">Reviews</h2>
-        <p className="mt-1 text-sm text-ink-muted">Read, reply to, and edit replies on published customer reviews.</p>
+        <h2 className="text-2xl font-semibold tracking-tight text-ink">Customer reviews</h2>
+        <p className="mt-1 max-w-2xl text-sm text-ink-muted">
+          Manage the feedback that shapes your reputation. Read what customers say, reply in public,
+          and show future buyers that your business listens and improves.
+        </p>
       </div>
 
       {error && <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
@@ -98,7 +101,7 @@ export default function ReviewsPage() {
       {!loading && summary?.summary ? (
         <div className="card mb-6 border-primary-100 bg-gradient-to-br from-primary-50/70 via-white to-slate-50 p-5">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-primary-600">AI review summary</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-primary-600">Reputation insights</p>
             <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${sentimentLabel(summary.sentiment).className}`}>
               {sentimentLabel(summary.sentiment).text}
             </span>
@@ -106,7 +109,7 @@ export default function ReviewsPage() {
           <p className="mt-3 text-sm leading-relaxed text-ink">{summary.summary}</p>
           {(summary.cons?.length > 0) && (
             <div className="mt-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">Cons</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">Areas to improve</p>
               <ul className="mt-1.5 space-y-1 text-sm text-ink">
                 {summary.cons.map((item) => (
                   <li key={item}>• {item}</li>
@@ -118,9 +121,15 @@ export default function ReviewsPage() {
       ) : null}
 
       {loading ? (
-        <p className="text-sm text-ink-muted">Loading reviews...</p>
+        <p className="text-sm text-ink-muted">Loading your customer feedback...</p>
       ) : reviews.length === 0 ? (
-        <div className="card p-8 text-center text-sm text-ink-muted">No published reviews yet.</div>
+        <div className="card p-8 text-center">
+          <p className="text-sm font-medium text-ink">No published reviews yet</p>
+          <p className="mt-2 text-sm text-ink-muted">
+            Invite customers to share their experience. New reviews will appear here so you can reply
+            and build trust on your public profile.
+          </p>
+        </div>
       ) : (
         <div className="space-y-4">
           {reviews.map((review) => {
@@ -136,6 +145,15 @@ export default function ReviewsPage() {
                       {review.author_name} · {review.rating}/5 · {new Date(review.created_at).toLocaleDateString()}
                     </p>
                   </div>
+                  {!hasReply ? (
+                    <span className="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-800">
+                      Awaiting your reply
+                    </span>
+                  ) : (
+                    <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+                      Replied
+                    </span>
+                  )}
                 </div>
                 <p className="mt-3 text-sm leading-relaxed text-slate-700">{review.content}</p>
 
@@ -143,11 +161,11 @@ export default function ReviewsPage() {
                   <div className="mt-4 rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="font-medium text-ink">Your reply</p>
+                        <p className="font-medium text-ink">Your public reply</p>
                         <p className="mt-1 whitespace-pre-wrap">{review.business_reply}</p>
                         {review.business_reply_at ? (
                           <p className="mt-2 text-xs text-slate-400">
-                            Updated {new Date(review.business_reply_at).toLocaleDateString()}
+                            Last updated {new Date(review.business_reply_at).toLocaleDateString()}
                           </p>
                         ) : null}
                       </div>
@@ -163,11 +181,18 @@ export default function ReviewsPage() {
                 ) : (
                   <div className="mt-4 space-y-2">
                     <label className="block text-sm font-medium text-ink">
-                      {hasReply ? 'Edit your reply' : 'Write a public reply'}
+                      {hasReply ? 'Update your public reply' : 'Reply to this customer'}
                     </label>
+                    <p className="text-xs text-ink-muted">
+                      Your response appears on your public profile and helps shoppers see how you handle feedback.
+                    </p>
                     <textarea
                       className="input-field min-h-[90px]"
-                      placeholder="Write a public reply..."
+                      placeholder={
+                        hasReply
+                          ? 'Refine your reply so it sounds clear, helpful, and on-brand...'
+                          : 'Thank the customer, address their points, and show how you will help...'
+                      }
                       value={replyDrafts[review.id] ?? (hasReply ? review.business_reply : '')}
                       onChange={(e) => setReplyDrafts((prev) => ({ ...prev, [review.id]: e.target.value }))}
                     />
@@ -181,10 +206,10 @@ export default function ReviewsPage() {
                         {savingId === review.id
                           ? hasReply
                             ? 'Saving...'
-                            : 'Sending...'
+                            : 'Publishing...'
                           : hasReply
-                            ? 'Save changes'
-                            : 'Reply'}
+                            ? 'Save reply'
+                            : 'Publish reply'}
                       </button>
                       {hasReply ? (
                         <button

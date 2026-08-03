@@ -1,24 +1,22 @@
 import { Link } from 'react-router-dom'
 import {
-  ArrowRight,
   BarChart3,
   Bot,
   Check,
-  Globe,
   Lightbulb,
   Search,
   ShieldCheck,
   Sparkles,
   Star,
   Truck,
-  Users,
 } from 'lucide-react'
 import { PUBLIC_SITE_URL } from '../utils/constants'
+import TrustStatsBand from '../components/marketing/TrustStatsBand'
 
 const stats = [
-  { icon: Users, value: '50K+', label: 'Verified reviews' },
-  { icon: Globe, value: '10K+', label: 'Businesses listed' },
-  { icon: Star, value: '4.7', label: 'Average trust score' },
+  { label: 'Verified reviews', numeric: 50, suffix: 'K+', decimals: 0, detail: 'From real customers' },
+  { label: 'Businesses listed', numeric: 10, suffix: 'K+', decimals: 0, detail: 'Growing every week' },
+  { label: 'Average trust score', numeric: 4.7, suffix: '', decimals: 1, detail: 'Out of 5.0' },
 ]
 
 const growthFeatures = [
@@ -38,26 +36,6 @@ const growthFeatures = [
     text: 'Strong review signals help your business appear more credible across search and AI answers.',
   },
 ]
-
-const stories = [
-  {
-    title: 'How local retailers use reviews to win new customers',
-    tag: 'Case study',
-    image: 'from-primary-200 to-primary-400',
-  },
-  {
-    title: 'The complete guide to review invitations that convert',
-    tag: 'Guide',
-    image: 'from-slate-200 to-slate-400',
-  },
-  {
-    title: 'What AI says about your brand — and how to influence it',
-    tag: 'Article',
-    image: 'from-rose-200 to-primary-300',
-  },
-]
-
-const logos = ['Marriott', 'ADT', 'Vistaprint', 'Amica', 'Square', 'Stripe']
 
 export default function LandingPage() {
   return (
@@ -124,25 +102,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="border-y border-border bg-slate-50 py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-center text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-            The world&apos;s most trusted feedback platform
-          </h2>
-          <div className="mt-12 grid gap-8 sm:grid-cols-3">
-            {stats.map(({ icon: Icon, value, label }) => (
-              <div key={label} className="text-center">
-                <div className="mx-auto mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-primary-600 shadow-sm ring-1 ring-slate-200">
-                  <Icon className="h-5 w-5" strokeWidth={1.5} />
-                </div>
-                <p className="text-4xl font-semibold tabular-nums text-slate-900">{value}</p>
-                <p className="mt-2 text-sm text-slate-600">{label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <TrustStatsBand
+        title="The world's most trusted feedback platform"
+        stats={stats}
+      />
 
       {/* AI bridge */}
       <section id="products" className="py-20">
@@ -182,17 +145,6 @@ export default function LandingPage() {
               ))}
             </ul>
           </div>
-        </div>
-      </section>
-
-      {/* Logo strip */}
-      <section className="border-y border-border bg-white py-10">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-12 gap-y-6 px-4 sm:px-6 lg:px-8">
-          {logos.map((name) => (
-            <span key={name} className="text-lg font-semibold tracking-wide text-slate-300">
-              {name}
-            </span>
-          ))}
         </div>
       </section>
 
@@ -347,28 +299,6 @@ export default function LandingPage() {
             <Link to="/setup" className="mt-6 inline-flex rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-primary-700">
               Learn more
             </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Get inspired */}
-      <section id="resources" className="bg-slate-50 py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-center text-2xl font-semibold text-slate-900 sm:text-3xl">Get inspired</h2>
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {stories.map((story) => (
-              <article key={story.title} className="overflow-hidden rounded-3xl bg-white shadow-soft">
-                <div className={`h-44 bg-gradient-to-br ${story.image}`} />
-                <div className="p-6">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-primary-600">{story.tag}</p>
-                  <h3 className="mt-2 text-lg font-semibold leading-snug text-slate-900">{story.title}</h3>
-                  <a href="#" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary-600 hover:text-primary-700">
-                    Read story
-                    <ArrowRight className="h-4 w-4" />
-                  </a>
-                </div>
-              </article>
-            ))}
           </div>
         </div>
       </section>

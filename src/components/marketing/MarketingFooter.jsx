@@ -32,10 +32,10 @@ const columns = [
   {
     title: 'Resources',
     links: [
-      { label: 'Blog', href: '/#resources' },
-      { label: 'Guides', href: '/#resources' },
-      { label: 'Case studies', href: '/#resources' },
-      { label: 'Help center', href: '/#resources' },
+      { label: 'How it works', href: '/how-it-works' },
+      { label: 'Pricing', href: '/pricing' },
+      { label: 'Help for businesses', href: `${PUBLIC_SITE_URL}/help/businesses` },
+      { label: 'Trust Centre', href: `${PUBLIC_SITE_URL}/trust-centre` },
     ],
   },
   {
