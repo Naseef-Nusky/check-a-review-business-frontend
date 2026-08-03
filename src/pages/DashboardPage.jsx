@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Bell, MessageSquare, Star, TrendingUp } from 'lucide-react'
+import { Bell, MessageSquare, MessageSquareWarning, Star } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { businessApi } from '../services/api'
 
@@ -39,11 +39,15 @@ export default function DashboardPage() {
   }, [business, refreshBusiness])
 
   const unreadCount = notifications.filter((n) => !n.read).length
+  const unrepliedReviews = useMemo(
+    () => reviews.filter((review) => !review.business_reply),
+    [reviews],
+  )
 
   const stats = [
     { label: 'Average rating', value: Number(business?.average_rating || 0).toFixed(1), icon: Star },
     { label: 'Total reviews', value: String(business?.review_count || 0), icon: MessageSquare },
-    { label: 'Trust score', value: `${Math.round(Number(business?.trust_score || 0))}%`, icon: TrendingUp },
+    { label: 'Awaiting reply', value: String(unrepliedReviews.length), icon: MessageSquareWarning },
     { label: 'Unread alerts', value: String(unreadCount), icon: Bell },
   ]
 
@@ -58,6 +62,12 @@ export default function DashboardPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           <Link
+            to="/reviews"
+            className="inline-flex items-center justify-center rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-primary-700"
+          >
+            {unrepliedReviews.length > 0 ? `Reply to reviews (${unrepliedReviews.length})` : 'Manage reviews'}
+          </Link>
+          <Link
             to="/notifications"
             className="inline-flex items-center justify-center rounded-xl border border-border bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
           >
@@ -65,7 +75,7 @@ export default function DashboardPage() {
           </Link>
           <Link
             to="/profile"
-            className="inline-flex items-center justify-center rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-primary-700"
+            className="inline-flex items-center justify-center rounded-xl border border-border bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
           >
             Edit company details
           </Link>
@@ -92,6 +102,25 @@ export default function DashboardPage() {
           <p className="mt-1">
             Update your company details and contact support if you need help getting approved.
           </p>
+        </div>
+      )}
+
+      {!loading && unrepliedReviews.length > 0 && (
+        <div className="mb-6 flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="font-semibold text-amber-950">
+              {unrepliedReviews.length} review{unrepliedReviews.length === 1 ? '' : 's'} waiting for your reply
+            </p>
+            <p className="mt-1 text-sm text-amber-900/90">
+              Open your reviews page to respond publicly from the business dashboard.
+            </p>
+          </div>
+          <Link
+            to="/reviews"
+            className="inline-flex shrink-0 items-center justify-center rounded-xl bg-amber-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-amber-800"
+          >
+            Reply now
+          </Link>
         </div>
       )}
 
@@ -156,22 +185,51 @@ export default function DashboardPage() {
         </div>
 
         <div className="card p-6">
-          <h3 className="font-semibold text-ink">Recent reviews</h3>
+          <div className="flex items-center justify-between gap-3">
+            <h3 className="font-semibold text-ink">Recent reviews</h3>
+            {unrepliedReviews.length > 0 ? (
+              <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800">
+                {unrepliedReviews.length} need reply
+              </span>
+            ) : null}
+          </div>
           {loading ? (
             <p className="mt-2 text-sm text-ink-muted">Loading...</p>
           ) : reviews.length === 0 ? (
             <p className="mt-2 text-sm text-ink-muted">No published reviews yet. Invite customers to leave feedback.</p>
           ) : (
             <ul className="mt-4 space-y-3">
-              {reviews.slice(0, 5).map((review) => (
-                <li key={review.id} className="rounded-xl border border-border px-3 py-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="font-medium text-ink">{review.author_name || 'Customer'}</p>
-                    <p className="text-sm text-ink-muted">{review.rating}/5</p>
-                  </div>
-                  <p className="mt-1 line-clamp-2 text-sm text-ink-muted">{review.title}</p>
-                </li>
-              ))}
+              {reviews.slice(0, 5).map((review) => {
+                const needsReply = !review.business_reply
+                return (
+                  <li key={review.id} className="rounded-xl border border-border px-3 py-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="font-medium text-ink">{review.author_name || 'Customer'}</p>
+                      <div className="flex items-center gap-2">
+                        {needsReply ? (
+                          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800">
+                            Needs reply
+                          </span>
+                        ) : (
+                          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-800">
+                            Replied
+                          </span>
+                        )}
+                        <p className="text-sm text-ink-muted">{review.rating}/5</p>
+                      </div>
+                    </div>
+                    <p className="mt-1 line-clamp-2 text-sm text-ink-muted">{review.title}</p>
+                    {needsReply ? (
+                      <Link
+                        to="/reviews"
+                        className="mt-2 inline-block text-xs font-semibold text-primary-700 hover:text-primary-800"
+                      >
+                        Reply from dashboard →
+                      </Link>
+                    ) : null}
+                  </li>
+                )
+              })}
             </ul>
           )}
           <Link to="/reviews" className="mt-4 inline-block text-sm font-medium text-primary-600 hover:text-primary-700">

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { businessApi } from '../services/api'
+import { takePendingBusinessLogo } from '../utils/pendingLogo'
 
 export default function VerifyEmailPage() {
   const [searchParams] = useSearchParams()
@@ -34,7 +35,18 @@ export default function VerifyEmailPage() {
         return
       }
       login(result.user, result.token)
-      await refreshBusiness()
+      const profile = await refreshBusiness()
+
+      const pendingLogo = takePendingBusinessLogo()
+      if (pendingLogo && profile?.id) {
+        try {
+          await businessApi.uploadLogo(profile.id, pendingLogo)
+          await refreshBusiness()
+        } catch (logoErr) {
+          console.warn('Pending logo upload failed after verification:', logoErr)
+        }
+      }
+
       navigate('/dashboard')
     } catch (err) {
       setError(err.message || 'Verification failed')

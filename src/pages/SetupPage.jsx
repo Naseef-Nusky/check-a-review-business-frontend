@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext'
 import { businessApi } from '../services/api'
 import { APP_NAME } from '../utils/constants'
 import { BUSINESS_LOCATIONS } from '../utils/locations'
+import { stashPendingBusinessLogo } from '../utils/pendingLogo'
 
 const steps = ['Business details', 'Additional details', 'Personal details', 'Activate account']
 
@@ -181,7 +182,9 @@ Contact: ${form.firstName} ${form.lastName}`.trim(),
       })
 
       if (result.requiresEmailVerification) {
-        // Logo can be uploaded from the profile page after email verification.
+        if (logoFile) {
+          await stashPendingBusinessLogo(logoFile)
+        }
         navigate(`/verify-email?email=${encodeURIComponent(form.email)}`)
         return
       }

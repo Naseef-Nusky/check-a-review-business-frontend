@@ -172,10 +172,10 @@ export default function ProfilePage() {
     setSuccess('')
     try {
       await businessApi.uploadLogo(business.id, file)
-      await refreshBusiness()
+      const updated = await refreshBusiness()
       if (logoPreview.startsWith('blob:')) URL.revokeObjectURL(logoPreview)
-      setLogoFile(file)
-      setLogoPreview(URL.createObjectURL(file))
+      setLogoFile(null)
+      setLogoPreview(updated?.logo_url ? resolveMediaUrl(updated.logo_url) : URL.createObjectURL(file))
       setSuccess('Logo updated')
     } catch (err) {
       setError(err.message || 'Failed to upload logo')
