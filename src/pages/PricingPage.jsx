@@ -119,21 +119,6 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <section className="border-b border-border bg-slate-50 py-12">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
-            Trusted by businesses globally
-          </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
-            {pricing.logos.map((logo) => (
-              <span key={logo} className="text-lg font-semibold tracking-wide text-slate-300">
-                {logo}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-center text-3xl font-semibold tracking-tight text-slate-900">
