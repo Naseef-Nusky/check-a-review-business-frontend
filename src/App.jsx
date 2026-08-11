@@ -23,6 +23,7 @@ import WidgetPage from './pages/WidgetPage'
 import NotificationsPage from './pages/NotificationsPage'
 import SubscriptionPage from './pages/SubscriptionPage'
 import TeamPage from './pages/TeamPage'
+import DomainsPage from './pages/DomainsPage'
 import AcceptTeamInvitePage from './pages/AcceptTeamInvitePage'
 
 function PublicOnly({ children }) {
@@ -87,6 +88,7 @@ export default function App() {
               <Route path="notifications" element={<NotificationsPage />} />
               <Route path="invitations" element={<InvitationsPage />} />
               <Route path="team" element={<TeamPage />} />
+              <Route path="domains" element={<DomainsPage />} />
               <Route path="analytics" element={<AnalyticsPage />} />
               <Route path="widget" element={<WidgetPage />} />
               <Route path="subscription" element={<SubscriptionPage />} />

@@ -12,6 +12,7 @@ import {
   Settings,
   Star,
   Users,
+  Globe,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { businessApi } from '../services/api'
@@ -24,6 +25,7 @@ const navItems = [
   { to: '/notifications', label: 'Notifications', icon: Bell },
   { to: '/invitations', label: 'Invitations', icon: MessageSquare },
   { to: '/team', label: 'Team', icon: Users },
+  { to: '/domains', label: 'Domains', icon: Globe },
   { to: '/analytics', label: 'Analytics', icon: BarChart3 },
   { to: '/widget', label: 'Widget', icon: Code2 },
   { to: '/subscription', label: 'Subscription', icon: CreditCard },

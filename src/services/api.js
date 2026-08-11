@@ -61,7 +61,9 @@ export const businessApi = {
   getInvitations: (businessId) => api.get(`/reviews/invitations/${businessId}`),
   sendInvitation: (businessId, email) => api.post('/reviews/invitations', { businessId, email }),
   getAnalytics: (businessId) => api.get(`/businesses/${businessId}/analytics`),
-  getWidget: (businessId) => api.get(`/widget/${businessId}/data`),
+  getWidget: (businessId, { preview = false } = {}) =>
+    api.get(`/widget/${businessId}/data${preview ? '?preview=1' : ''}`),
+  getWidgetDomainStatus: (businessId) => api.get(`/widget/${businessId}/status`),
   getNotifications: () => api.get('/notifications'),
   markNotificationRead: (id) => api.patch(`/notifications/${id}/read`),
   markAllNotificationsRead: () => api.patch('/notifications/read-all'),
@@ -77,6 +79,11 @@ export const businessApi = {
   removeTeamMember: (businessId, memberId) => api.delete(`/team/${businessId}/members/${memberId}`),
   getTeamInvite: (token) => api.get(`/team/invite/${token}`),
   acceptTeamInvite: (token, data = {}) => api.post(`/team/invite/${token}/accept`, data),
+  getDomains: (businessId) => api.get(`/domains/${businessId}`),
+  addDomain: (businessId, domain) => api.post(`/domains/${businessId}`, { domain }),
+  setPrimaryDomain: (businessId, domainId) =>
+    api.patch(`/domains/${businessId}/${domainId}/primary`),
+  removeDomain: (businessId, domainId) => api.delete(`/domains/${businessId}/${domainId}`),
 }
 
 export { ApiError }

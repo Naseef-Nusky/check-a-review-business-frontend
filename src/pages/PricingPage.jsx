@@ -4,39 +4,45 @@ import { Link } from 'react-router-dom'
 import { businessApi } from '../services/api'
 
 function formatCellValue(value) {
-  const normalized = typeof value === 'string' ? value.trim().toLowerCase() : value
-  if (
-    normalized === true ||
-    normalized === 'true' ||
-    normalized === 'yes' ||
-    normalized === 'included' ||
-    normalized === '1' ||
-    normalized === '✓' ||
-    normalized === 'check' ||
-    normalized === 'checked'
-  ) {
-    return (
+  if (typeof value === 'boolean') {
+    return value ? (
       <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary-50 text-primary-600">
         <Check className="h-4 w-4" strokeWidth={2.75} />
       </span>
+    ) : (
+      <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+        <Minus className="h-4 w-4" strokeWidth={2.5} />
+      </span>
     )
   }
-  if (
-    normalized === false ||
-    normalized === 'false' ||
-    normalized === 'no' ||
-    normalized === 'not included' ||
-    normalized === '0' ||
-    normalized === '' ||
-    normalized == null
-  ) {
+
+  const text = String(value ?? '').trim()
+  if (!text) {
     return (
       <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-400">
         <Minus className="h-4 w-4" strokeWidth={2.5} />
       </span>
     )
   }
-  return <span className="text-sm text-slate-700">{value}</span>
+
+  const normalized = text.toLowerCase()
+  if (['true', 'yes', 'included', '✓', 'check', 'checked'].includes(normalized)) {
+    return (
+      <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary-50 text-primary-600">
+        <Check className="h-4 w-4" strokeWidth={2.75} />
+      </span>
+    )
+  }
+  if (['false', 'no', 'not included', '—', '-', 'x'].includes(normalized)) {
+    return (
+      <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+        <Minus className="h-4 w-4" strokeWidth={2.5} />
+      </span>
+    )
+  }
+
+  // Keep numeric/limit values like 1, 3, Unlimited as text (Users / Domains)
+  return <span className="text-sm font-medium text-slate-700">{text}</span>
 }
 
 export default function PricingPage() {
