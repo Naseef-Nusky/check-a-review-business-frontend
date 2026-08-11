@@ -65,6 +65,18 @@ export const businessApi = {
   getNotifications: () => api.get('/notifications'),
   markNotificationRead: (id) => api.patch(`/notifications/${id}/read`),
   markAllNotificationsRead: () => api.patch('/notifications/read-all'),
+  getSubscription: (businessId) => api.get(`/subscriptions/${businessId}`),
+  getPayments: (businessId) => api.get(`/subscriptions/${businessId}/payments`),
+  createCheckout: (businessId, plan) => api.post('/subscriptions/checkout', { businessId, plan }),
+  cancelSubscription: (businessId) => api.post('/subscriptions/cancel', { businessId }),
+  getTeam: (businessId) => api.get(`/team/${businessId}`),
+  createTeamMember: (businessId, { name, email, password }) =>
+    api.post(`/team/${businessId}/members`, { name, email, password }),
+  inviteTeamMember: (businessId, email, name, password) =>
+    api.post(`/team/${businessId}/members`, { email, name, password }),
+  removeTeamMember: (businessId, memberId) => api.delete(`/team/${businessId}/members/${memberId}`),
+  getTeamInvite: (token) => api.get(`/team/invite/${token}`),
+  acceptTeamInvite: (token, data = {}) => api.post(`/team/invite/${token}/accept`, data),
 }
 
 export { ApiError }

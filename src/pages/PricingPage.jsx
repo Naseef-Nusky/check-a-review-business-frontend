@@ -5,13 +5,38 @@ import { businessApi } from '../services/api'
 
 function formatCellValue(value) {
   const normalized = typeof value === 'string' ? value.trim().toLowerCase() : value
-  if (normalized === true || normalized === 'true' || normalized === 'yes' || normalized === 'included') {
-    return <Check className="mx-auto h-4 w-4 text-primary-600" strokeWidth={2.5} />
+  if (
+    normalized === true ||
+    normalized === 'true' ||
+    normalized === 'yes' ||
+    normalized === 'included' ||
+    normalized === '1' ||
+    normalized === '✓' ||
+    normalized === 'check' ||
+    normalized === 'checked'
+  ) {
+    return (
+      <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary-50 text-primary-600">
+        <Check className="h-4 w-4" strokeWidth={2.75} />
+      </span>
+    )
   }
-  if (normalized === false || normalized === 'false' || normalized === 'no' || normalized === 'not included') {
-    return <Minus className="mx-auto h-4 w-4 text-slate-300" strokeWidth={2.5} />
+  if (
+    normalized === false ||
+    normalized === 'false' ||
+    normalized === 'no' ||
+    normalized === 'not included' ||
+    normalized === '0' ||
+    normalized === '' ||
+    normalized == null
+  ) {
+    return (
+      <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+        <Minus className="h-4 w-4" strokeWidth={2.5} />
+      </span>
+    )
   }
-  return <span className="text-sm text-slate-700">{value || '—'}</span>
+  return <span className="text-sm text-slate-700">{value}</span>
 }
 
 export default function PricingPage() {
@@ -31,6 +56,10 @@ export default function PricingPage() {
   }, [])
 
   const planKeys = useMemo(() => pricing?.plans?.map((plan) => plan.key) || [], [pricing])
+  const planCount = Math.max(planKeys.length, 1)
+  const comparisonGridStyle = {
+    gridTemplateColumns: `minmax(180px, 1.5fr) repeat(${planCount}, minmax(120px, 1fr))`,
+  }
 
   if (loading) {
     return (
@@ -68,7 +97,7 @@ export default function PricingPage() {
             <p className="mt-4 text-sm font-medium text-primary-600">{pricing.trustBadge}</p>
           </div>
 
-          <div className="mt-12 grid gap-6 xl:grid-cols-4">
+          <div className="mt-12 grid gap-6 xl:grid-cols-3">
             {pricing.plans.map((plan) => (
               <article
                 key={plan.key}
@@ -90,6 +119,16 @@ export default function PricingPage() {
                   {plan.price}
                   <span className="ml-1 text-base font-medium text-slate-500">{plan.period}</span>
                 </p>
+                {(plan.users || plan.domains) ? (
+                  <p className="mt-3 text-sm font-medium text-slate-600">
+                    {[
+                      plan.users ? `${plan.users} user${String(plan.users) === '1' ? '' : 's'}` : null,
+                      plan.domains ? `${plan.domains} domain${String(plan.domains) === '1' ? '' : 's'}` : null,
+                    ]
+                      .filter(Boolean)
+                      .join(' · ')}
+                  </p>
+                ) : null}
                 <p className="mt-4 min-h-16 text-sm leading-relaxed text-slate-600">{plan.description}</p>
                 <Link
                   to="/setup"
@@ -102,14 +141,33 @@ export default function PricingPage() {
                   {plan.ctaLabel || 'Get started'}
                 </Link>
                 <ul className="mt-6 space-y-3 border-t border-border pt-6">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3 text-sm text-slate-700">
-                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-600">
-                        <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
-                      </span>
-                      <span>{feature}</span>
-                    </li>
-                  ))}
+                  {(plan.features || []).map((feature, featureIndex) => {
+                    const label = typeof feature === 'string' ? feature : feature?.label || ''
+                    const included =
+                      typeof feature === 'string' ? true : feature?.included !== false
+                    if (!label) return null
+                    return (
+                      <li
+                        key={`${plan.key}-feature-${featureIndex}`}
+                        className="flex items-start gap-3 text-sm text-slate-700"
+                      >
+                        <span
+                          className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
+                            included
+                              ? 'bg-primary-100 text-primary-600'
+                              : 'bg-slate-100 text-slate-400'
+                          }`}
+                        >
+                          {included ? (
+                            <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
+                          ) : (
+                            <Minus className="h-3.5 w-3.5" strokeWidth={2.5} />
+                          )}
+                        </span>
+                        <span className={included ? '' : 'text-slate-400'}>{label}</span>
+                      </li>
+                    )
+                  })}
                 </ul>
               </article>
             ))}
@@ -148,7 +206,7 @@ export default function PricingPage() {
           </div>
 
           <div className="mt-12 overflow-hidden rounded-[2rem] border border-border bg-white shadow-soft">
-            <div className="grid grid-cols-[minmax(180px,1.5fr)_repeat(4,minmax(120px,1fr))] border-b border-border bg-slate-900 text-white">
+            <div className="grid border-b border-border bg-slate-900 text-white" style={comparisonGridStyle}>
               <div className="px-5 py-4 text-sm font-semibold">Features</div>
               {pricing.plans.map((plan) => (
                 <div key={`head-${plan.key}`} className="px-5 py-4 text-center text-sm font-semibold">
@@ -165,7 +223,8 @@ export default function PricingPage() {
                 {section.rows.map((row) => (
                   <div
                     key={`${section.title}-${row.label}`}
-                    className="grid grid-cols-[minmax(180px,1.5fr)_repeat(4,minmax(120px,1fr))] border-t border-border first:border-t-0"
+                    className="grid border-t border-border first:border-t-0"
+                    style={comparisonGridStyle}
                   >
                     <div className="px-5 py-4 text-sm font-medium text-slate-700">{row.label}</div>
                     {planKeys.map((planKey) => (
