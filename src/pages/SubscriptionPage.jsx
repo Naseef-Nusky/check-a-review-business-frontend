@@ -4,6 +4,20 @@ import { CreditCard } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { businessApi, ApiError } from '../services/api'
 
+function formatCurrencyAmount(cents, currency) {
+  const code = String(currency || 'GBP').toUpperCase()
+  try {
+    return new Intl.NumberFormat('en-GB', {
+      style: 'currency',
+      currency: code,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format((Number(cents) || 0) / 100)
+  } catch {
+    return `${code} ${((Number(cents) || 0) / 100).toFixed(2)}`
+  }
+}
+
 function ActionButton({ children, disabled, onClick, secondary = false }) {
   return (
     <button
@@ -67,6 +81,7 @@ export default function SubscriptionPage() {
   const squareReady = useMemo(() => Boolean(subscription?.squareConfigured), [subscription])
   const catalog = subscription?.catalog || []
   const entitlements = subscription?.entitlements
+  const primaryCurrency = catalog.find((plan) => plan.currency)?.currency || 'GBP'
 
   const demoMailto = (planName) =>
     `mailto:${salesEmail}?subject=${encodeURIComponent(`Check A Review ${planName} demo`)}&body=${encodeURIComponent(
@@ -122,7 +137,8 @@ export default function SubscriptionPage() {
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">Subscription</h1>
           <p className="mt-1 text-sm text-slate-500">
-            Paid plans are priced per month and billed annually in USD. Plus and Premium are billed per domain.
+            Paid plans are priced per month and billed annually in {primaryCurrency}. Plus and Premium are billed per
+            domain.
           </p>
         </div>
       </div>
@@ -255,7 +271,9 @@ export default function SubscriptionPage() {
                     </td>
                     <td className="px-2 py-2 capitalize text-slate-700">{payment.plan || '—'}</td>
                     <td className="px-2 py-2 text-slate-700">
-                      {typeof payment.amount === 'number' ? `$${(payment.amount / 100).toFixed(2)}` : '—'}
+                      {typeof payment.amount === 'number'
+                        ? formatCurrencyAmount(payment.amount, payment.currency || primaryCurrency)
+                        : '—'}
                     </td>
                     <td className="px-2 py-2 capitalize text-slate-700">{payment.status || '—'}</td>
                     <td className="px-2 py-2 font-mono text-xs text-slate-500">
