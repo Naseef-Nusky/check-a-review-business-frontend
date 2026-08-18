@@ -4,30 +4,6 @@ import { CreditCard } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { businessApi, ApiError } from '../services/api'
 
-const PLANS = [
-  {
-    id: 'free',
-    name: 'Free',
-    price: '$0',
-    period: 'forever',
-    features: ['Basic profile', 'View reviews', 'Limited invitations'],
-  },
-  {
-    id: 'starter',
-    name: 'Starter',
-    price: '$29',
-    period: '/mo',
-    features: ['Everything in Free', 'Unlimited invitations', 'Reply to reviews', 'Basic analytics'],
-  },
-  {
-    id: 'premium',
-    name: 'Premium',
-    price: '$199',
-    period: '/mo',
-    features: ['Everything in Starter', 'Review widget', 'Advanced analytics', 'Priority support'],
-  },
-]
-
 function ActionButton({ children, disabled, onClick, secondary = false }) {
   return (
     <button
@@ -56,6 +32,7 @@ export default function SubscriptionPage() {
   const [message, setMessage] = useState('')
 
   const currentPlan = subscription?.plan || 'free'
+  const salesEmail = subscription?.salesEmail || 'info@checkareview.com'
 
   const load = async () => {
     if (!business?.id) return
@@ -82,12 +59,19 @@ export default function SubscriptionPage() {
   useEffect(() => {
     const checkout = searchParams.get('checkout')
     if (checkout === 'success') {
-      setMessage('Payment received via Square. Your plan will update in a moment after confirmation.')
+      setMessage('Payment received via Square. Your plan will update after confirmation.')
       load()
     }
   }, [searchParams])
 
   const squareReady = useMemo(() => Boolean(subscription?.squareConfigured), [subscription])
+  const catalog = subscription?.catalog || []
+  const entitlements = subscription?.entitlements
+
+  const demoMailto = (planName) =>
+    `mailto:${salesEmail}?subject=${encodeURIComponent(`Check A Review ${planName} demo`)}&body=${encodeURIComponent(
+      `Hi,\n\nI would like a demo of the ${planName} plan for ${business?.name || 'our business'}.\n`,
+    )}`
 
   const upgrade = async (plan) => {
     if (!business?.id) return
@@ -130,14 +114,16 @@ export default function SubscriptionPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <div className="mb-8 flex items-start gap-3">
         <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-white">
           <CreditCard className="h-5 w-5" strokeWidth={1.5} />
         </span>
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">Subscription</h1>
-          <p className="mt-1 text-sm text-slate-500">Manage your plan and billing securely with Square.</p>
+          <p className="mt-1 text-sm text-slate-500">
+            Paid plans are priced per month and billed annually in USD. Plus and Premium are billed per domain.
+          </p>
         </div>
       </div>
 
@@ -147,13 +133,11 @@ export default function SubscriptionPage() {
         </div>
       ) : null}
       {error ? (
-        <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {error}
-        </div>
+        <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
       ) : null}
       {!squareReady ? (
         <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          Square sandbox keys are not configured on the API yet. Add them to the backend `.env`.
+          Square sandbox keys are not configured on the API yet. Add them to the backend `.env`, then sync plans in CRM.
         </div>
       ) : null}
 
@@ -161,55 +145,86 @@ export default function SubscriptionPage() {
         <p className="text-sm text-slate-500">Current plan</p>
         <p className="mt-1 text-xl font-semibold capitalize text-slate-900">{currentPlan}</p>
         <p className="mt-1 text-sm capitalize text-slate-500">Status: {subscription?.status || 'active'}</p>
+        {entitlements ? (
+          <p className="mt-2 text-sm text-slate-600">
+            {entitlements.usage.invitationsThisMonth}/{entitlements.limits.invitationsPerMonthLabel} invitations this
+            month · {entitlements.usage.users}/{entitlements.limits.usersLabel} users · {entitlements.usage.domains}/
+            {entitlements.limits.domainsLabel} domains · {entitlements.limits.widgetsLabel} widgets
+          </p>
+        ) : null}
+        {currentPlan !== 'free' ? (
+          <button
+            type="button"
+            className="mt-4 text-sm font-medium text-slate-600 underline"
+            onClick={cancel}
+            disabled={workingPlan === 'cancel'}
+          >
+            {workingPlan === 'cancel' ? 'Cancelling...' : 'Switch to Free'}
+          </button>
+        ) : null}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        {PLANS.map((plan) => {
-          const isCurrent = currentPlan === plan.id
-          const isPaid = plan.id !== 'free'
+      <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
+        {catalog.map((plan) => {
+          const isCurrent = currentPlan === plan.key
+          const checkoutable = ['buy', 'trial', 'demo'].includes(plan.checkout)
           return (
             <div
-              key={plan.id}
-              className={`rounded-2xl border p-5 ${
+              key={plan.key}
+              className={`flex flex-col rounded-2xl border p-5 ${
                 isCurrent ? 'border-primary-500 bg-primary-50/40 ring-1 ring-primary-500' : 'border-slate-200 bg-white'
               }`}
             >
               {isCurrent ? (
-                <span className="rounded-full bg-primary-600 px-2.5 py-0.5 text-xs font-medium text-white">
+                <span className="w-fit rounded-full bg-primary-600 px-2.5 py-0.5 text-xs font-medium text-white">
                   Current
                 </span>
+              ) : plan.tagline ? (
+                <p className="text-xs font-semibold uppercase tracking-wide text-primary-600">{plan.tagline}</p>
               ) : null}
               <h3 className="mt-2 text-lg font-semibold text-slate-900">{plan.name}</h3>
               <p className="mt-1 text-3xl font-bold text-slate-900">
-                {plan.price}
-                <span className="text-sm font-medium text-slate-500">{plan.period}</span>
+                {plan.priceLabel}
+                {plan.monthlyAmountCents ? (
+                  <span className="text-sm font-medium text-slate-500"> {plan.periodLabel}</span>
+                ) : null}
               </p>
-              <ul className="mt-4 space-y-2">
-                {plan.features.map((feature) => (
+              <ul className="mt-4 flex-1 space-y-2">
+                {(plan.features || []).map((feature) => (
                   <li key={feature} className="text-sm text-slate-600">
                     {feature}
                   </li>
                 ))}
               </ul>
-              {isPaid ? (
-                <ActionButton
-                  disabled={isCurrent || Boolean(workingPlan) || !squareReady}
-                  onClick={() => upgrade(plan.id)}
-                >
-                  {workingPlan === plan.id
-                    ? 'Redirecting to Square...'
-                    : isCurrent
-                      ? 'Current plan'
-                      : 'Upgrade with Square'}
+              {(plan.notes || []).map((note) => (
+                <p key={note} className="mt-3 text-xs text-slate-400">
+                  {note}
+                </p>
+              ))}
+              {plan.checkout === 'sales' ? (
+                <ActionButton onClick={() => { window.location.href = demoMailto(plan.name) }}>
+                  Book demo / contact sales
                 </ActionButton>
               ) : (
-                <ActionButton
-                  secondary
-                  disabled={isCurrent || currentPlan === 'free' || workingPlan === 'cancel'}
-                  onClick={cancel}
-                >
-                  {workingPlan === 'cancel' ? 'Cancelling...' : isCurrent ? 'Current plan' : 'Switch to Free'}
-                </ActionButton>
+                <>
+                  {plan.checkout === 'demo' ? (
+                    <ActionButton secondary onClick={() => { window.location.href = demoMailto(plan.name) }}>
+                      Book demo
+                    </ActionButton>
+                  ) : null}
+                  <ActionButton
+                    disabled={isCurrent || Boolean(workingPlan) || !squareReady || !checkoutable}
+                    onClick={() => upgrade(plan.key)}
+                  >
+                    {workingPlan === plan.key
+                      ? 'Redirecting to Square...'
+                      : isCurrent
+                        ? 'Current plan'
+                        : plan.checkout === 'trial'
+                          ? 'Try free for 14 days'
+                          : 'Buy now'}
+                  </ActionButton>
+                </>
               )}
             </div>
           )
@@ -244,7 +259,7 @@ export default function SubscriptionPage() {
                     </td>
                     <td className="px-2 py-2 capitalize text-slate-700">{payment.status || '—'}</td>
                     <td className="px-2 py-2 font-mono text-xs text-slate-500">
-                      {payment.square_payment_id || payment.stripe_payment_intent_id || payment.id}
+                      {payment.square_payment_id || payment.id}
                     </td>
                   </tr>
                 ))}

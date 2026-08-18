@@ -66,6 +66,7 @@ export default function ProfilePage() {
     email: '',
     phone: '',
     address: '',
+    brandColor: '#FF4081',
   })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -74,6 +75,7 @@ export default function ProfilePage() {
   const [logoPreview, setLogoPreview] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [canBrandMatch, setCanBrandMatch] = useState(false)
 
   useEffect(() => {
     let active = true
@@ -107,9 +109,14 @@ export default function ProfilePage() {
           email: profile?.email || '',
           phone: profile?.phone || '',
           address: profile?.address || '',
+          brandColor: profile?.brand_color || '#FF4081',
         })
         setLogoFile(null)
         setLogoPreview(profile?.logo_url ? resolveMediaUrl(profile.logo_url) : '')
+        if (profile?.id) {
+          const sub = await businessApi.getSubscription(profile.id).catch(() => null)
+          if (active) setCanBrandMatch(Boolean(sub?.entitlements?.flags?.brandMatch))
+        }
       } catch (err) {
         if (active) setError(err.message || 'Failed to load profile')
       } finally {
@@ -221,6 +228,7 @@ export default function ProfilePage() {
         email: form.email.trim(),
         phone: form.phone.trim(),
         address,
+        ...(canBrandMatch ? { brandColor: form.brandColor } : {}),
       })
       await refreshBusiness()
       setForm((prev) => ({
@@ -271,6 +279,28 @@ export default function ProfilePage() {
             disabled={uploadingLogo || saving}
           />
           {uploadingLogo ? <p className="mt-2 text-xs text-slate-400">Uploading logo...</p> : null}
+        </div>
+
+        <div>
+          <label className="label-text text-slate-700" htmlFor="brandColor">
+            Brand color
+          </label>
+          {canBrandMatch ? (
+            <input
+              id="brandColor"
+              type="color"
+              className="h-10 w-20 cursor-pointer rounded border border-border bg-white p-1"
+              value={form.brandColor || '#FF4081'}
+              onChange={update('brandColor')}
+            />
+          ) : (
+            <p className="mt-1 text-sm text-ink-muted">
+              Matching your public profile to your brand is included from Plus.{' '}
+              <a href="/subscription" className="font-semibold text-primary-600 hover:underline">
+                Upgrade
+              </a>
+            </p>
+          )}
         </div>
 
         <div>

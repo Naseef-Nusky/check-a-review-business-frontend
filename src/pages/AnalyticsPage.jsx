@@ -31,7 +31,12 @@ export default function AnalyticsPage() {
     <div>
       <div className="mb-8">
         <h2 className="text-2xl font-semibold tracking-tight text-ink">Analytics</h2>
-        <p className="mt-1 text-sm text-ink-muted">Track ratings and review trends for your business.</p>
+        <p className="mt-1 text-sm text-ink-muted">
+          Track ratings and review trends for your business.
+          {data?.entitlements?.flags?.advancedAnalytics
+            ? ' Premium dashboards are included on your plan.'
+            : ' Upgrade to Premium for richer dashboards, insights, and trends.'}
+        </p>
       </div>
 
       {error && <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
@@ -69,6 +74,29 @@ export default function AnalyticsPage() {
               )}
             </ul>
           </div>
+          {data?.entitlements?.flags?.advancedAnalytics ? (
+            <>
+              <div className="card p-6">
+                <h3 className="font-semibold text-ink">Invitation conversion this month</h3>
+                <p className="mt-4 text-3xl font-semibold text-ink">
+                  {data?.invitationStats?.invited_this_month || 0}
+                  <span className="ml-2 text-base font-medium text-ink-muted">sent</span>
+                </p>
+                <p className="mt-2 text-sm text-ink-muted">
+                  {data?.invitationStats?.reviewed_this_month || 0} turned into reviews.
+                </p>
+              </div>
+              <div className="card p-6">
+                <h3 className="font-semibold text-ink">Richer insights</h3>
+                <p className="mt-3 text-sm leading-relaxed text-ink-muted">
+                  Your Customer Success Manager can help you read rating mix, invitation timing, and TrustScore
+                  trends. {data?.entitlements?.flags?.optimizedInvites
+                    ? 'Enterprise also includes tools for optimized invitations and actionable insight planning.'
+                    : null}
+                </p>
+              </div>
+            </>
+          ) : null}
         </div>
       )}
     </div>

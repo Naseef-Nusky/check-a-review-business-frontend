@@ -47,6 +47,9 @@ export default function WidgetPage() {
           setError('')
           return
         }
+        if ((status.widgets || []).length) {
+          setSelectedStyle(status.widgets[0].id)
+        }
 
         const data = await businessApi.getWidget(profile.id, { preview: true })
         if (active) {
@@ -62,8 +65,10 @@ export default function WidgetPage() {
     }
   }, [business, refreshBusiness])
 
-  const styleConfig = WIDGET_STYLES.find((style) => style.id === selectedStyle) || WIDGET_STYLES[0]
+  const availableWidgets = domainStatus?.widgets?.length ? domainStatus.widgets : WIDGET_STYLES
+  const styleConfig = availableWidgets.find((style) => style.id === selectedStyle) || availableWidgets[0] || WIDGET_STYLES[0]
   const hasDomains = Boolean(domainStatus?.hasDomains)
+  const widgetsLocked = Number(domainStatus?.widgetsAllowed) === 0
   const domains = domainStatus?.domains || []
 
   // Preview uses preview=1 so portal can load without being a registered customer domain.
@@ -103,9 +108,17 @@ export default function WidgetPage() {
             Go to Domains
           </Link>
         </div>
+      ) : widgetsLocked ? (
+        <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          Widgets start on Starter. Your plan includes {domainStatus?.widgetsAllowed ?? 0} widgets.{' '}
+          <Link to="/subscription" className="font-semibold text-primary-600 hover:underline">
+            Upgrade
+          </Link>
+        </div>
       ) : (
         <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
           Widget allowed on: <span className="font-medium">{domains.join(', ')}</span>
+          {domainStatus?.widgetsAllowed ? ` · ${domainStatus.widgetsAllowed} widget styles on this plan` : ''}
         </div>
       )}
 
@@ -123,7 +136,7 @@ export default function WidgetPage() {
           </p>
         </div>
         <div className="bg-slate-50 p-6">
-          {business?.id && hasDomains ? (
+          {business?.id && hasDomains && !widgetsLocked ? (
             <iframe
               key={`${business.id}-${selectedStyle}`}
               src={previewUrl}
@@ -145,15 +158,15 @@ export default function WidgetPage() {
         <p className="mt-1 text-sm text-ink-muted">
           Select a design before copying your embed code. The preview above updates automatically.
         </p>
-        <div className="mt-5 grid gap-3 md:grid-cols-3">
-          {WIDGET_STYLES.map((style) => {
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {availableWidgets.map((style) => {
             const selected = selectedStyle === style.id
-            const dark = style.id === 'dark'
+            const dark = style.id === 'dark' || style.layout === 'dark'
             return (
               <button
                 key={style.id}
                 type="button"
-                disabled={!hasDomains}
+                disabled={!hasDomains || widgetsLocked}
                 onClick={() => {
                   setSelectedStyle(style.id)
                   setCopied(false)
@@ -228,7 +241,7 @@ export default function WidgetPage() {
             type="button"
             className="btn-primary mt-4"
             onClick={copy}
-            disabled={!embedCode || !hasDomains}
+            disabled={!embedCode || !hasDomains || widgetsLocked}
           >
             {copied ? 'Copied!' : 'Copy embed code'}
           </button>

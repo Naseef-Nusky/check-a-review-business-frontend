@@ -103,7 +103,7 @@ export default function PricingPage() {
             <p className="mt-4 text-sm font-medium text-primary-600">{pricing.trustBadge}</p>
           </div>
 
-          <div className="mt-12 grid gap-6 xl:grid-cols-3">
+          <div className="mt-12 grid gap-6 xl:grid-cols-4">
             {pricing.plans.map((plan) => (
               <article
                 key={plan.key}
@@ -123,7 +123,9 @@ export default function PricingPage() {
                 </div>
                 <p className="mt-4 text-4xl font-semibold tracking-tight text-slate-900">
                   {plan.price}
-                  <span className="ml-1 text-base font-medium text-slate-500">{plan.period}</span>
+                  {plan.period ? (
+                    <span className="ml-1 text-base font-medium text-slate-500">{plan.period}</span>
+                  ) : null}
                 </p>
                 {(plan.users || plan.domains) ? (
                   <p className="mt-3 text-sm font-medium text-slate-600">
@@ -137,7 +139,13 @@ export default function PricingPage() {
                 ) : null}
                 <p className="mt-4 min-h-16 text-sm leading-relaxed text-slate-600">{plan.description}</p>
                 <Link
-                  to="/setup"
+                  to={
+                    String(plan.ctaLabel || '')
+                      .toLowerCase()
+                      .includes('demo') || String(plan.price || '').toLowerCase().includes('contact')
+                      ? '/setup'
+                      : '/setup'
+                  }
                   className={`mt-6 inline-flex w-full items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition ${
                     plan.highlighted
                       ? 'bg-primary-600 text-white hover:bg-primary-700'
@@ -146,6 +154,15 @@ export default function PricingPage() {
                 >
                   {plan.ctaLabel || 'Get started'}
                 </Link>
+                {(plan.notes || []).length ? (
+                  <div className="mt-4 space-y-1">
+                    {plan.notes.map((note) => (
+                      <p key={note} className="text-xs leading-relaxed text-slate-400">
+                        {note}
+                      </p>
+                    ))}
+                  </div>
+                ) : null}
                 <ul className="mt-6 space-y-3 border-t border-border pt-6">
                   {(plan.features || []).map((feature, featureIndex) => {
                     const label = typeof feature === 'string' ? feature : feature?.label || ''

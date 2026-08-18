@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { APP_NAME, PUBLIC_SITE_URL } from '../../utils/constants'
+import { APP_NAME, PUBLIC_SITE_URL, CONTACT_EMAIL } from '../../utils/constants'
 
 const columns = [
   {
@@ -41,6 +41,7 @@ const columns = [
   {
     title: 'Support',
     links: [
+      { label: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}` },
       { label: 'Contact sales', href: '/setup' },
       { label: 'Status', href: '#' },
       { label: 'Legal', href: '#' },
@@ -50,7 +51,7 @@ const columns = [
 ]
 
 function FooterLink({ href, children, className }) {
-  if (href.startsWith('http')) {
+  if (href.startsWith('mailto:') || href.startsWith('http')) {
     return (
       <a href={href} className={className}>
         {children}
@@ -109,7 +110,8 @@ export default function MarketingFooter() {
             </Link>
             <span className="text-sm">© {new Date().getFullYear()} {APP_NAME}</span>
           </div>
-          <div className="flex flex-wrap gap-4 text-sm">
+          <div className="flex flex-wrap items-center gap-4 text-sm">
+            <a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-white">{CONTACT_EMAIL}</a>
             <a href={PUBLIC_SITE_URL} className="hover:text-white">Consumer site</a>
             <Link to="/login" className="hover:text-white">Business login</Link>
             <Link to="/pricing" className="hover:text-white">Pricing</Link>

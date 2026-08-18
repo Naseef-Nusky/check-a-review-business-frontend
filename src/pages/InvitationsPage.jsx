@@ -11,13 +11,19 @@ export default function InvitationsPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
+  const [quota, setQuota] = useState(null)
+
   const load = async () => {
     setLoading(true)
     setError('')
     try {
       const profile = business || (await refreshBusiness())
-      const rows = await businessApi.getInvitations(profile.id)
+      const [rows, sub] = await Promise.all([
+        businessApi.getInvitations(profile.id),
+        businessApi.getSubscription(profile.id).catch(() => null),
+      ])
       setInvitations(rows || [])
+      setQuota(sub?.entitlements || null)
     } catch (err) {
       setError(err.message || 'Failed to load invitations')
     } finally {
@@ -52,7 +58,12 @@ export default function InvitationsPage() {
     <div>
       <div className="mb-8">
         <h2 className="text-2xl font-semibold tracking-tight text-ink">Invitations</h2>
-        <p className="mt-1 text-sm text-ink-muted">Invite customers by email to leave a review.</p>
+        <p className="mt-1 text-sm text-ink-muted">
+          Invite customers by email to leave a review.
+          {quota
+            ? ` ${quota.usage.invitationsThisMonth}/${quota.limits.invitationsPerMonthLabel} used this month.`
+            : ''}
+        </p>
       </div>
 
       {error && <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
@@ -67,7 +78,11 @@ export default function InvitationsPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <button type="submit" className="btn-primary" disabled={sending}>
+        <button
+          type="submit"
+          className="btn-primary"
+          disabled={sending || (quota?.remaining?.invitations === 0)}
+        >
           {sending ? 'Sending...' : 'Send invite'}
         </button>
       </form>

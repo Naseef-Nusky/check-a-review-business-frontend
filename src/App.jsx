@@ -20,6 +20,8 @@ import ReviewsPage from './pages/ReviewsPage'
 import InvitationsPage from './pages/InvitationsPage'
 import AnalyticsPage from './pages/AnalyticsPage'
 import WidgetPage from './pages/WidgetPage'
+import IntegrationsPage from './pages/IntegrationsPage'
+import MarketingAssetsPage from './pages/MarketingAssetsPage'
 import NotificationsPage from './pages/NotificationsPage'
 import SubscriptionPage from './pages/SubscriptionPage'
 import TeamPage from './pages/TeamPage'
@@ -91,6 +93,8 @@ export default function App() {
               <Route path="domains" element={<DomainsPage />} />
               <Route path="analytics" element={<AnalyticsPage />} />
               <Route path="widget" element={<WidgetPage />} />
+              <Route path="integrations" element={<IntegrationsPage />} />
+              <Route path="marketing-assets" element={<MarketingAssetsPage />} />
               <Route path="subscription" element={<SubscriptionPage />} />
               <Route path="settings" element={<ProfilePage />} />
             </Route>

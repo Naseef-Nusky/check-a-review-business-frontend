@@ -45,7 +45,7 @@ export default function LandingPage() {
         <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:py-24 lg:px-8">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-600">Check A Review for Business</p>
-            <h1 className="mt-4 text-4xl font-semibold leading-tight tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
+            <h1 className="mt-4 text-4xl font-semibold leading-tight tracking-tight text-slate-900 sm:text-5xl">
               Build trust.
               <br />
               Get AI recommended.
@@ -288,7 +288,7 @@ export default function LandingPage() {
           </div>
           <div className="rounded-3xl bg-white p-8 shadow-soft">
             <h3 className="text-xl font-semibold text-slate-900">Find the right plan for your business</h3>
-            <p className="mt-3 text-sm leading-relaxed text-slate-600">Free, Starter, and Premium tiers for every stage of growth.</p>
+            <p className="mt-3 text-sm leading-relaxed text-slate-600">Starter, Plus, Premium, and Enterprise for every stage of growth.</p>
             <Link to="/setup" className="mt-6 inline-flex rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white">
               View plans & pricing
             </Link>
