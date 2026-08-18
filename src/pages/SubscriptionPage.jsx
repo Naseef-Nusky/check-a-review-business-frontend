@@ -46,7 +46,6 @@ export default function SubscriptionPage() {
   const [message, setMessage] = useState('')
 
   const currentPlan = subscription?.plan || 'free'
-  const salesEmail = subscription?.salesEmail || 'info@checkareview.com'
 
   const load = async () => {
     if (!business?.id) return
@@ -82,11 +81,6 @@ export default function SubscriptionPage() {
   const catalog = subscription?.catalog || []
   const entitlements = subscription?.entitlements
   const primaryCurrency = catalog.find((plan) => plan.currency)?.currency || 'GBP'
-
-  const demoMailto = (planName) =>
-    `mailto:${salesEmail}?subject=${encodeURIComponent(`Check A Review ${planName} demo`)}&body=${encodeURIComponent(
-      `Hi,\n\nI would like a demo of the ${planName} plan for ${business?.name || 'our business'}.\n`,
-    )}`
 
   const upgrade = async (plan) => {
     if (!business?.id) return
@@ -218,16 +212,11 @@ export default function SubscriptionPage() {
                 </p>
               ))}
               {plan.checkout === 'sales' ? (
-                <ActionButton onClick={() => { window.location.href = demoMailto(plan.name) }}>
-                  Book demo / contact sales
+                <ActionButton disabled>
+                  {plan.ctaLabel || 'Coming soon'}
                 </ActionButton>
               ) : (
                 <>
-                  {plan.checkout === 'demo' ? (
-                    <ActionButton secondary onClick={() => { window.location.href = demoMailto(plan.name) }}>
-                      Book demo
-                    </ActionButton>
-                  ) : null}
                   <ActionButton
                     disabled={isCurrent || Boolean(workingPlan) || !squareReady || !checkoutable}
                     onClick={() => upgrade(plan.key)}
@@ -238,7 +227,7 @@ export default function SubscriptionPage() {
                         ? 'Current plan'
                         : plan.checkout === 'trial'
                           ? 'Try free for 14 days'
-                          : 'Buy now'}
+                          : plan.ctaLabel || 'Buy now'}
                   </ActionButton>
                 </>
               )}
