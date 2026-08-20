@@ -8,7 +8,7 @@ import {
   PageHero,
   StatBand,
 } from '../../components/marketing/MarketingSections'
-import { ImageVisual, InboxVisual, InsightsVisual } from '../../components/marketing/MarketingVisuals'
+import { ImageVisual } from '../../components/marketing/MarketingVisuals'
 
 const stats = [
   {
@@ -69,8 +69,8 @@ export default function EngageWithFeedbackPage() {
         secondary={{ to: '/setup', label: 'Get started free' }}
         visual={
           <ImageVisual
-            src="/engage-with-feedback.png"
-            alt="A business owner holding a phone, surrounded by five-star customer reviews"
+            src="/Engage-with-feedback-hero.png"
+            alt="A business owner reviewing customer feedback on a phone"
           />
         }
       />
@@ -86,7 +86,12 @@ export default function EngageWithFeedbackPage() {
           'Reply publicly to show future buyers how you handle things when they go wrong.',
           'Track whether reviewers update their rating after you step in.',
         ]}
-        visual={<InboxVisual />}
+        visual={
+          <ImageVisual
+            src="/Engage-recover-customers.png"
+            alt="Support manager calmly replying to a critical customer review"
+          />
+        }
       />
 
       <FeatureRow
@@ -98,7 +103,12 @@ export default function EngageWithFeedbackPage() {
           'Consistent tone across hundreds of replies builds a recognisable brand voice.',
           'Reviews with replies give search engines and AI assistants more to work with.',
         ]}
-        visual={<InsightsVisual />}
+        visual={
+          <ImageVisual
+            src="/Engage-public-replies.png"
+            alt="Prospective customer reading public business replies on a review profile"
+          />
+        }
         reverse
         tone="muted"
       />
@@ -114,6 +124,8 @@ export default function EngageWithFeedbackPage() {
         summary="Petal & Post lifted website conversions by more than a third after committing to answer every review of three stars or lower."
         body="Rather than avoiding criticism, the team treated each low rating as a support ticket in public. Customers noticed that complaints got answered within hours, and prospective buyers browsing the profile saw a business that fixes things instead of one that hides."
         metric={{ value: '37%', label: 'increase in website conversions within two quarters' }}
+        image="/Engage-customer-story.png"
+        imageAlt="Florist arranging flowers while checking customer review feedback"
       />
 
       <CrossLinks

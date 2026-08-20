@@ -8,7 +8,7 @@ import {
   PageHero,
   StatBand,
 } from '../../components/marketing/MarketingSections'
-import { InvitationVisual, SearchVisual, WidgetVisual } from '../../components/marketing/MarketingVisuals'
+import { ImageVisual } from '../../components/marketing/MarketingVisuals'
 
 const stats = [
   {
@@ -67,7 +67,12 @@ export default function AccelerateConversionsPage() {
         description="Let your customers do the selling. Real ratings and real quotes reassure buyers at every point where they might otherwise hesitate."
         primary={{ to: '/pricing', label: 'Explore all plans' }}
         secondary={{ to: '/setup', label: 'Get started free' }}
-        visual={<WidgetVisual />}
+        visual={
+          <ImageVisual
+            src="/Accelerate-conversions-hero.png"
+            alt="Shopper checking star ratings and reviews before checkout"
+          />
+        }
       />
 
       <StatBand stats={stats} />
@@ -81,7 +86,12 @@ export default function AccelerateConversionsPage() {
           'Highlight reviews that mention the concern a category of buyer tends to have.',
           'Keep it current automatically, so the proof never goes stale.',
         ]}
-        visual={<InvitationVisual />}
+        visual={
+          <ImageVisual
+            src="/Accelerate-checkout-proof.png"
+            alt="Product page with trust score and reviews near the buy button"
+          />
+        }
       />
 
       <FeatureRow
@@ -93,7 +103,12 @@ export default function AccelerateConversionsPage() {
           'Feed fresh review content to search engines and AI answer engines.',
           'Reuse your best quotes across print, packaging, and video.',
         ]}
-        visual={<SearchVisual />}
+        visual={
+          <ImageVisual
+            src="/Accelerate-ads-proof.png"
+            alt="Marketer reviewing ad creatives that include customer ratings"
+          />
+        }
         reverse
         tone="muted"
       />
@@ -109,6 +124,8 @@ export default function AccelerateConversionsPage() {
         summary="Clearpath Finance raised conversions on its application page by double digits after adding review widgets above the form."
         body="Operating in a category crowded with inflated promises, Clearpath focused on being verifiably credible instead of loud. Moving budget towards verified reviews improved both the quality of its search traffic and the share of visitors who completed an application."
         metric={{ value: '14%', label: 'higher completion rate on the application page' }}
+        image="/Accelerate-customer-story.png"
+        imageAlt="Finance professional reviewing an application with trust ratings nearby"
       />
 
       <CrossLinks

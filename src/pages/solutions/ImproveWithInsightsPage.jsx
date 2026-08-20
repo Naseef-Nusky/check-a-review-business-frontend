@@ -8,7 +8,7 @@ import {
   PageHero,
   StatBand,
 } from '../../components/marketing/MarketingSections'
-import { InboxVisual, InsightsVisual, WidgetVisual } from '../../components/marketing/MarketingVisuals'
+import { ImageVisual } from '../../components/marketing/MarketingVisuals'
 
 const stats = [
   {
@@ -67,7 +67,12 @@ export default function ImproveWithInsightsPage() {
         description="Customer feedback is one of the most honest datasets your business will ever own. Read it properly and it will tell you what to fix, what to keep, and where to go next."
         primary={{ to: '/pricing', label: 'Explore all plans' }}
         secondary={{ to: '/setup', label: 'Get started free' }}
-        visual={<InsightsVisual />}
+        visual={
+          <ImageVisual
+            src="/Improve-with-insights-hero.png"
+            alt="Business strategist reviewing customer insights and analytics"
+          />
+        }
       />
 
       <StatBand stats={stats} />
@@ -81,7 +86,12 @@ export default function ImproveWithInsightsPage() {
           'Catch a new issue in the weeks after a launch rather than the quarter after.',
           'Quantify how much of your feedback each problem actually accounts for.',
         ]}
-        visual={<InboxVisual />}
+        visual={
+          <ImageVisual
+            src="/Improve-spot-patterns.png"
+            alt="Product team reviewing customer feedback themes and trends"
+          />
+        }
       />
 
       <FeatureRow
@@ -93,7 +103,12 @@ export default function ImproveWithInsightsPage() {
           'Measure the effect of a fix by watching the relevant theme afterwards.',
           'See where reviews come from and how well your invitations are performing.',
         ]}
-        visual={<WidgetVisual />}
+        visual={
+          <ImageVisual
+            src="/Improve-decide-evidence.png"
+            alt="Leadership team deciding next steps from review analytics"
+          />
+        }
         reverse
         tone="muted"
       />
@@ -109,6 +124,8 @@ export default function ImproveWithInsightsPage() {
         summary="Rivermount Recycling used review insights to catch a dip in satisfaction weeks before it would have shown up in its overall rating."
         body="By tracking themes rather than stars alone, the team noticed a rise in comments about valuation delays. They reworked the step before it spread across the customer base, and the topic disappeared from feedback within two months."
         metric={{ value: '2 months', label: 'from spotting the trend to clearing it from feedback' }}
+        image="/Improve-customer-story.png"
+        imageAlt="Technician checking customer satisfaction trends in a recycling workshop"
       />
 
       <CrossLinks

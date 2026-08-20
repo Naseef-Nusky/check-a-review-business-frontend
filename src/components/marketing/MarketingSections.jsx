@@ -141,20 +141,40 @@ export function StepList({ title, description, steps }) {
   )
 }
 
-export function CustomerStory({ company, summary, body, metric }) {
+export function CustomerStory({ company, summary, body, metric, image, imageAlt }) {
   return (
     <section className="bg-white py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid gap-10 rounded-3xl bg-slate-900 p-8 text-white sm:p-12 lg:grid-cols-3 lg:items-center">
-          <div className="lg:col-span-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-300">Customer story</p>
-            <p className="mt-4 text-xl font-semibold leading-snug sm:text-2xl">{summary}</p>
-            <p className="mt-5 text-sm leading-relaxed text-slate-300">{body}</p>
-            <p className="mt-6 text-sm font-medium text-slate-400">{company}</p>
-          </div>
-          <div className="rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">
-            <p className="text-4xl font-semibold text-primary-400">{metric.value}</p>
-            <p className="mt-2 text-sm leading-relaxed text-slate-300">{metric.label}</p>
+        <div
+          className={`overflow-hidden rounded-3xl bg-slate-900 text-white ${
+            image ? 'grid gap-0 lg:grid-cols-2 lg:items-stretch' : ''
+          }`}
+        >
+          {image ? (
+            <div className="relative min-h-[14rem] overflow-hidden lg:min-h-full">
+              <img
+                src={image}
+                alt={imageAlt || company || 'Customer story'}
+                className="absolute inset-0 h-full w-full object-cover object-center"
+                width={1200}
+                height={900}
+                loading="lazy"
+                decoding="async"
+              />
+              <div className="absolute inset-0 bg-slate-950/20" />
+            </div>
+          ) : null}
+          <div className={`p-8 sm:p-12 ${image ? '' : 'grid gap-10 lg:grid-cols-3 lg:items-center'}`}>
+            <div className={image ? '' : 'lg:col-span-2'}>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-300">Customer story</p>
+              <p className="mt-4 text-xl font-semibold leading-snug sm:text-2xl">{summary}</p>
+              <p className="mt-5 text-sm leading-relaxed text-slate-300">{body}</p>
+              <p className="mt-6 text-sm font-medium text-slate-400">{company}</p>
+            </div>
+            <div className={`rounded-2xl bg-white/5 p-6 ring-1 ring-white/10 ${image ? 'mt-8' : ''}`}>
+              <p className="text-4xl font-semibold text-primary-400">{metric.value}</p>
+              <p className="mt-2 text-sm leading-relaxed text-slate-300">{metric.label}</p>
+            </div>
           </div>
         </div>
       </div>
