@@ -137,6 +137,11 @@ export default function SubscriptionPage() {
         </div>
       </div>
 
+      {subscription?.status === 'past_due' ? (
+        <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          Your yearly renewal payment failed. Retry payment below to keep {currentPlan} active.
+        </div>
+      ) : null}
       {message ? (
         <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
           {message}
@@ -155,6 +160,19 @@ export default function SubscriptionPage() {
         <p className="text-sm text-slate-500">Current plan</p>
         <p className="mt-1 text-xl font-semibold capitalize text-slate-900">{currentPlan}</p>
         <p className="mt-1 text-sm capitalize text-slate-500">Status: {subscription?.status || 'active'}</p>
+        {subscription?.current_period_end && currentPlan !== 'free' ? (
+          <p className="mt-1 text-sm text-slate-600">
+            {subscription.status === 'past_due'
+              ? 'Yearly renewal payment failed. Retry checkout to keep this plan.'
+              : `Auto-renews yearly on ${new Date(subscription.current_period_end).toLocaleDateString('en-GB', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                })}.`}
+          </p>
+        ) : currentPlan !== 'free' ? (
+          <p className="mt-1 text-sm text-slate-600">This plan renews automatically every year through Square.</p>
+        ) : null}
         {entitlements ? (
           <p className="mt-2 text-sm text-slate-600">
             {entitlements.usage.invitationsThisMonth}/{entitlements.limits.invitationsPerMonthLabel} invitations this
@@ -177,7 +195,9 @@ export default function SubscriptionPage() {
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
         {catalog.map((plan) => {
           const isCurrent = currentPlan === plan.key
+          const pastDue = subscription?.status === 'past_due'
           const checkoutable = ['buy', 'trial', 'demo'].includes(plan.checkout)
+          const canRetry = pastDue && isCurrent
           return (
             <div
               key={plan.key}
@@ -218,16 +238,18 @@ export default function SubscriptionPage() {
               ) : (
                 <>
                   <ActionButton
-                    disabled={isCurrent || Boolean(workingPlan) || !squareReady || !checkoutable}
+                    disabled={(!canRetry && isCurrent) || Boolean(workingPlan) || !squareReady || !checkoutable}
                     onClick={() => upgrade(plan.key)}
                   >
                     {workingPlan === plan.key
                       ? 'Redirecting to Square...'
-                      : isCurrent
-                        ? 'Current plan'
-                        : plan.checkout === 'trial'
-                          ? 'Try free for 14 days'
-                          : plan.ctaLabel || 'Buy now'}
+                      : canRetry
+                        ? 'Retry yearly payment'
+                        : isCurrent
+                          ? 'Current plan'
+                          : plan.checkout === 'trial'
+                            ? 'Try free for 14 days'
+                            : plan.ctaLabel || 'Buy now'}
                   </ActionButton>
                 </>
               )}
