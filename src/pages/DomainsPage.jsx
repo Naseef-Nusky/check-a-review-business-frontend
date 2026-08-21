@@ -59,7 +59,7 @@ export default function DomainsPage() {
       await businessApi.addDomain(business.id, domainInput)
       setDomainInput('')
       setOpenAdd(false)
-      setSuccess('Domain added. Plan limits are enforced from CRM Domains values.')
+      setSuccess('Domain added. Plan limits follow your subscription’s Domains allowance.')
       await load()
     } catch (err) {
       setFormError(err instanceof ApiError ? err.message : 'Failed to add domain')
@@ -101,7 +101,7 @@ export default function DomainsPage() {
         <div>
           <h2 className="text-2xl font-semibold tracking-tight text-ink">Domains</h2>
           <p className="mt-1 text-sm text-ink-muted">
-            Manage websites linked to this business. Limits follow your plan’s Domains value in CRM.
+            Manage websites linked to this business. Limits follow your plan’s Domains allowance.
           </p>
         </div>
         {isOwner || loading ? (

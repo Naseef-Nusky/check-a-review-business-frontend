@@ -69,10 +69,15 @@ export function StatBand({ stats }) {
 }
 
 export function FeatureRow({ kicker, title, description, bullets = [], visual, reverse = false, tone = 'white' }) {
+  const hasVisual = Boolean(visual)
   return (
     <section className={tone === 'muted' ? 'bg-slate-50 py-20' : 'bg-white py-20'}>
-      <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8">
-        <div className={reverse ? 'lg:order-2' : ''}>
+      <div
+        className={`mx-auto grid max-w-7xl items-center gap-12 px-4 sm:px-6 lg:gap-16 lg:px-8 ${
+          hasVisual ? 'lg:grid-cols-2' : ''
+        }`}
+      >
+        <div className={hasVisual && reverse ? 'lg:order-2' : hasVisual ? '' : 'max-w-3xl'}>
           {kicker ? <p className="section-kicker">{kicker}</p> : null}
           <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">{title}</h2>
           <p className="mt-5 text-base leading-relaxed text-slate-600">{description}</p>
@@ -87,7 +92,7 @@ export function FeatureRow({ kicker, title, description, bullets = [], visual, r
             </ul>
           ) : null}
         </div>
-        <div className={reverse ? 'lg:order-1' : ''}>{visual}</div>
+        {hasVisual ? <div className={reverse ? 'lg:order-1' : ''}>{visual}</div> : null}
       </div>
     </section>
   )
@@ -119,20 +124,41 @@ export function CapabilityGrid({ title, description, items }) {
 
 export function StepList({ title, description, steps }) {
   return (
-    <section className="bg-slate-50 py-20">
+    <section className="bg-white py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl">
-          <h2 className="text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">{title}</h2>
+          <p className="section-kicker">Process</p>
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">{title}</h2>
           {description ? <p className="mt-4 text-base leading-relaxed text-slate-600">{description}</p> : null}
         </div>
-        <ol className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
+        <ol className="mt-12 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
           {steps.map((step, index) => (
-            <li key={step.title} className="rounded-3xl bg-white p-6 shadow-soft">
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-primary-500 text-sm font-semibold text-white">
-                {index + 1}
-              </span>
-              <h3 className="mt-5 text-base font-semibold text-slate-900">{step.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600">{step.text}</p>
+            <li
+              key={step.title}
+              className="group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-border bg-slate-50/90 p-6 shadow-soft transition hover:border-primary-200 hover:bg-white sm:p-7"
+            >
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary-500 to-primary-300 opacity-80" />
+              <div className="flex items-center justify-between gap-3">
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-sm font-semibold text-white">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                {index < steps.length - 1 ? (
+                  <span className="hidden text-xs font-semibold uppercase tracking-[0.14em] text-slate-300 xl:inline">
+                    Next
+                  </span>
+                ) : (
+                  <span className="hidden text-xs font-semibold uppercase tracking-[0.14em] text-primary-500 xl:inline">
+                    Live
+                  </span>
+                )}
+              </div>
+              <h3 className="mt-6 text-lg font-semibold tracking-tight text-slate-900">{step.title}</h3>
+              <p className="mt-3 flex-1 text-sm leading-relaxed text-slate-600">{step.text}</p>
+              <div className="mt-6 h-px w-full bg-border" />
+              <p className="mt-4 text-xs font-medium text-slate-400">
+                Step {index + 1} of {steps.length}
+              </p>
             </li>
           ))}
         </ol>
@@ -208,7 +234,44 @@ export function CrossLinks({ title, links }) {
   )
 }
 
-export function ClosingCta({ title, description, primary, secondary }) {
+export function ClosingCta({ title, description, primary, secondary, backgroundImage }) {
+  if (backgroundImage) {
+    return (
+      <section className="relative overflow-hidden py-24">
+        <div className="absolute inset-0">
+          <img
+            src={backgroundImage}
+            alt=""
+            className="h-full w-full object-cover object-center"
+            width={1920}
+            height={1080}
+            loading="lazy"
+            decoding="async"
+            aria-hidden="true"
+          />
+          <div className="absolute inset-0 bg-slate-950/60" />
+        </div>
+        <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">{title}</h2>
+          {description ? <p className="mt-4 text-base leading-relaxed text-white/80">{description}</p> : null}
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Cta to={primary.to} variant="primary">
+              {primary.label}
+            </Cta>
+            {secondary ? (
+              <Link
+                to={secondary.to}
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/20"
+              >
+                {secondary.label}
+              </Link>
+            ) : null}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className="bg-white py-24">
       <div className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">

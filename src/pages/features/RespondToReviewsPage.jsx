@@ -7,57 +7,57 @@ import {
   PageHero,
   StepList,
 } from '../../components/marketing/MarketingSections'
-import { InboxVisual, ReplyVisual, WidgetVisual } from '../../components/marketing/MarketingVisuals'
+import { ImageVisual } from '../../components/marketing/MarketingVisuals'
 
 const capabilities = [
   {
-    icon: Sparkles,
-    title: 'Suggested drafts',
-    text: 'A reply is drafted from the review itself, matching its length and tone so you are editing rather than staring at a blank box.',
-  },
-  {
-    icon: PenLine,
-    title: 'You approve every word',
-    text: 'Nothing is published automatically. Every suggestion is fully editable and only goes out when you send it.',
-  },
-  {
-    icon: SlidersHorizontal,
-    title: 'Learns your voice',
-    text: 'The more you adjust the drafts, the closer future suggestions land to how your team actually writes.',
-  },
-  {
     icon: Bell,
-    title: 'Notifications that fit',
-    text: 'Choose to hear about every review or only the ratings that need attention, so alerts stay useful.',
-  },
-  {
-    icon: Plug,
-    title: 'Reply from your own tools',
-    text: 'Connect your helpdesk or chat platform and handle reviews next to your other customer conversations.',
+    title: 'Email and in-app alerts',
+    text: 'When a new review is submitted or goes live, your business team gets notified so you can respond while it still matters.',
   },
   {
     icon: MessageSquare,
-    title: 'Full reply history',
-    text: 'See what was said, when, and by whom, so anyone picking up the queue has the context.',
+    title: 'Public replies from your dashboard',
+    text: 'Write or edit a reply on the Reviews page. It appears under the review on your public profile for every future visitor.',
+  },
+  {
+    icon: PenLine,
+    title: 'Edit anytime',
+    text: 'Update an existing reply when details change. Customers are emailed on the first reply, not every later edit.',
+  },
+  {
+    icon: Sparkles,
+    title: 'Automated review checks',
+    text: 'New reviews are screened for spam, policy issues, and risk before they go live. Clear ones publish; others wait for our moderation team.',
+  },
+  {
+    icon: SlidersHorizontal,
+    title: 'See what still needs a reply',
+    text: 'Your review list shows which feedback is unanswered so nothing sits open for weeks.',
+  },
+  {
+    icon: Plug,
+    title: 'Team access',
+    text: 'Invite colleagues so the right people can manage reviews and replies for your business.',
   },
 ]
 
 const steps = [
   {
-    title: 'A new review arrives',
-    text: 'Someone leaves feedback through your invitation or by finding your profile on their own.',
+    title: 'A customer leaves a review',
+    text: 'They arrive from your invitation email or find your public profile and submit a rating, title, and comments.',
   },
   {
-    title: 'You get notified',
-    text: 'An alert reaches you by email or through a connected tool, filtered to the ratings you care about.',
+    title: 'Checks run before it goes live',
+    text: 'The review is saved as pending while automated checks look for spam, personal info, duplicates, and policy issues. Clean reviews publish; flagged ones wait for a human moderation check.',
   },
   {
-    title: 'You write the reply',
-    text: 'Answer from scratch or start from an AI draft, then edit until it sounds like your business.',
+    title: 'Your business is notified',
+    text: 'You get an email and an in-app notification so you can open the Reviews page in the business portal and see the new feedback.',
   },
   {
-    title: 'It goes public',
-    text: 'Your reply sits under the review where every future visitor can see how you responded.',
+    title: 'You post a public reply',
+    text: 'Write your response in the dashboard and publish it. It shows under the review on your profile, and the customer is emailed when you reply for the first time.',
   },
 ]
 
@@ -70,7 +70,14 @@ export default function RespondToReviewsPage() {
         description="Write back to your customers to thank them, sort out problems, and let everyone else see the kind of business you run when something goes wrong."
         primary={{ to: '/setup', label: 'Get started free' }}
         secondary={{ to: '/pricing', label: 'View plans' }}
-        visual={<ReplyVisual />}
+        visual={
+          <ImageVisual
+            src="/Respond-to-reviews.png"
+            alt="Customer review with a public business reply"
+            className="w-full max-w-xl bg-slate-50"
+            imgClassName="h-auto w-full object-contain object-top"
+          />
+        }
       />
 
       <FeatureRow
@@ -82,28 +89,25 @@ export default function RespondToReviewsPage() {
           'Give context on what happened without arguing with the reviewer.',
           'Build a visible record of a business that engages rather than ignores.',
         ]}
-        visual={<InboxVisual />}
         tone="muted"
       />
 
       <FeatureRow
-        kicker="AI-assisted replies"
-        title="Keep quality high when the volume climbs"
-        description="Replying carefully to a handful of reviews is easy. Doing it to hundreds a month is where most teams quietly give up. AI drafting keeps the standard consistent without turning your replies into copy-paste."
+        kicker="Stay on top of feedback"
+        title="Know when a review needs your voice"
+        description="Replying carefully builds trust, but only if you see the review in time. Check A Review notifies your team and keeps unanswered feedback easy to find in the business portal."
         bullets={[
-          'Draft a tailored response in seconds and refine it before sending.',
-          'Stay consistent in tone across everyone who handles the queue.',
-          'Spend the time you save on the replies that genuinely need thought.',
+          'Get email and dashboard alerts when customers leave feedback.',
+          'Open Reviews to read the full comment and publish a reply.',
+          'Edit a reply later if you need to refine the wording.',
         ]}
-        visual={<WidgetVisual />}
-        reverse
       />
 
       <CapabilityGrid title="What you get" items={capabilities} />
 
       <StepList
         title="How it works"
-        description="From a new review landing to your reply going live, in four steps."
+        description="How a review moves from a customer’s submission to your public reply in Check A Review."
         steps={steps}
       />
 

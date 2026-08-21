@@ -21,10 +21,16 @@ function Frame({ children, className = '' }) {
 }
 
 /** Renders an illustration from /public with the same framing as the mock UI visuals. */
-export function ImageVisual({ src, alt, className = '' }) {
+export function ImageVisual({ src, alt, className = '', imgClassName = '' }) {
   return (
     <div className={`overflow-hidden rounded-3xl border border-border bg-white shadow-elevated ${className}`}>
-      <img src={src} alt={alt} className="block h-auto w-full object-cover" loading="lazy" />
+      <img
+        src={src}
+        alt={alt}
+        className={`block w-full object-cover ${imgClassName || 'h-auto'}`}
+        loading="lazy"
+        decoding="async"
+      />
     </div>
   )
 }

@@ -152,7 +152,7 @@ export default function SubscriptionPage() {
       ) : null}
       {!squareReady ? (
         <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          Square sandbox keys are not configured on the API yet. Add them to the backend `.env`, then sync plans in CRM.
+          Square billing is not fully configured on the API yet. Add Square keys to the backend `.env`, then sync plans from Billing plans.
         </div>
       ) : null}
 
