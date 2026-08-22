@@ -90,6 +90,11 @@ export default function SubscriptionPage() {
     try {
       const result = await businessApi.createCheckout(business.id, plan)
       if (result?.url) {
+        if (result.sandboxMode) {
+          setMessage(
+            'Opening Square sandbox testing panel. Click “Test payment” there — do not use “Preview link”, because the preview page cannot charge cards.',
+          )
+        }
         window.location.href = result.url
         return
       }
