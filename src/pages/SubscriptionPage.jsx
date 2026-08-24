@@ -136,7 +136,7 @@ export default function SubscriptionPage() {
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">Subscription</h1>
           <p className="mt-1 text-sm text-slate-500">
-            Paid plans are priced per month and billed annually in {primaryCurrency}. Plus and Premium are billed per
+            Paid plans are priced and billed monthly in {primaryCurrency}. Plus and Premium are billed per
             domain.
           </p>
         </div>
@@ -144,7 +144,7 @@ export default function SubscriptionPage() {
 
       {subscription?.status === 'past_due' ? (
         <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          Your yearly renewal payment failed. Retry payment below to keep {currentPlan} active.
+          Your monthly renewal payment failed. Retry payment below to keep {currentPlan} active.
         </div>
       ) : null}
       {message ? (
@@ -168,15 +168,15 @@ export default function SubscriptionPage() {
         {subscription?.current_period_end && currentPlan !== 'free' ? (
           <p className="mt-1 text-sm text-slate-600">
             {subscription.status === 'past_due'
-              ? 'Yearly renewal payment failed. Retry checkout to keep this plan.'
-              : `Auto-renews yearly on ${new Date(subscription.current_period_end).toLocaleDateString('en-GB', {
+              ? 'Monthly renewal payment failed. Retry checkout to keep this plan.'
+              : `Auto-renews monthly on ${new Date(subscription.current_period_end).toLocaleDateString('en-GB', {
                   day: 'numeric',
                   month: 'long',
                   year: 'numeric',
                 })}.`}
           </p>
         ) : currentPlan !== 'free' ? (
-          <p className="mt-1 text-sm text-slate-600">This plan renews automatically every year through Square.</p>
+          <p className="mt-1 text-sm text-slate-600">This plan renews automatically every month through Square.</p>
         ) : null}
         {entitlements ? (
           <p className="mt-2 text-sm text-slate-600">
@@ -249,7 +249,7 @@ export default function SubscriptionPage() {
                     {workingPlan === plan.key
                       ? 'Redirecting to Square...'
                       : canRetry
-                        ? 'Retry yearly payment'
+                        ? 'Retry monthly payment'
                         : isCurrent
                           ? 'Current plan'
                           : plan.checkout === 'trial'
