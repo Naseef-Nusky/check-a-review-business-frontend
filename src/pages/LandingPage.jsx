@@ -275,7 +275,7 @@ export default function LandingPage() {
             },
             {
               title: 'Find the right plan for your business',
-              text: 'Starter, Plus, Premium, and Enterprise for every stage of growth.',
+              text: 'Starter, Plus, and Premium for every stage of growth.',
               cta: { to: '/setup', label: 'View plans & pricing' },
               image: '/about-vision.png',
               imageAlt: 'Choosing the right Check A Review plan for your business',

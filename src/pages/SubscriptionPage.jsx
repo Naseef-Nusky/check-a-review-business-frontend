@@ -221,7 +221,7 @@ export default function SubscriptionPage() {
         ) : null}
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
         {catalog.map((plan) => {
           const isCurrent = currentPlan === plan.key
           const pastDue = subscription?.status === 'past_due'

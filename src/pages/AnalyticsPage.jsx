@@ -91,7 +91,7 @@ export default function AnalyticsPage() {
                 <p className="mt-3 text-sm leading-relaxed text-ink-muted">
                   Your Customer Success Manager can help you read rating mix, invitation timing, and TrustScore
                   trends. {data?.entitlements?.flags?.optimizedInvites
-                    ? 'Enterprise also includes tools for optimized invitations and actionable insight planning.'
+                    ? 'Your plan also includes tools for optimized invitations and actionable insight planning.'
                     : null}
                 </p>
               </div>

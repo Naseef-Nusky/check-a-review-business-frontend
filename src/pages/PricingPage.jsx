@@ -103,7 +103,7 @@ export default function PricingPage() {
             <p className="mt-4 text-sm font-medium text-primary-600">{pricing.trustBadge}</p>
           </div>
 
-          <div className="mt-12 grid gap-6 xl:grid-cols-4">
+          <div className="mt-12 grid gap-6 xl:grid-cols-3">
             {pricing.plans.map((plan) => (
               <article
                 key={plan.key}
