@@ -71,11 +71,37 @@ export default function SubscriptionPage() {
 
   useEffect(() => {
     const checkout = searchParams.get('checkout')
-    if (checkout === 'success') {
-      setMessage('Payment received via Square. Your plan will update after confirmation.')
-      load()
+    if (checkout !== 'success' || !business?.id) return
+
+    let cancelled = false
+    const confirm = async () => {
+      setMessage('Confirming your Square payment…')
+      setError('')
+      try {
+        const updated = await businessApi.confirmCheckout(business.id)
+        if (cancelled) return
+        setSubscription(updated)
+        const planName = updated?.plan || 'paid'
+        setMessage(
+          planName !== 'free'
+            ? `Payment confirmed. You are now on the ${planName} plan.`
+            : 'Payment received. If your plan has not updated, refresh in a moment.',
+        )
+        const history = await businessApi.getPayments(business.id).catch(() => [])
+        if (!cancelled) setPayments(history || [])
+      } catch (err) {
+        if (cancelled) return
+        setError(err instanceof ApiError ? err.message : 'Could not confirm payment')
+        setMessage('Payment received via Square. Refresh this page in a moment if the plan is still updating.')
+        await load()
+      }
     }
-  }, [searchParams])
+
+    confirm()
+    return () => {
+      cancelled = true
+    }
+  }, [searchParams, business?.id])
 
   const squareReady = useMemo(() => Boolean(subscription?.squareConfigured), [subscription])
   const catalog = subscription?.catalog || []

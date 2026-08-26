@@ -70,6 +70,7 @@ export const businessApi = {
   getSubscription: (businessId) => api.get(`/subscriptions/${businessId}`),
   getPayments: (businessId) => api.get(`/subscriptions/${businessId}/payments`),
   createCheckout: (businessId, plan) => api.post('/subscriptions/checkout', { businessId, plan }),
+  confirmCheckout: (businessId) => api.post('/subscriptions/confirm-checkout', { businessId }),
   cancelSubscription: (businessId) => api.post('/subscriptions/cancel', { businessId }),
   getTeam: (businessId) => api.get(`/team/${businessId}`),
   createTeamMember: (businessId, { name, email, password }) =>
