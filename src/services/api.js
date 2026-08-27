@@ -72,7 +72,21 @@ export const businessApi = {
   markAllNotificationsRead: () => api.patch('/notifications/read-all'),
   getSubscription: (businessId) => api.get(`/subscriptions/${businessId}`),
   getPayments: (businessId) => api.get(`/subscriptions/${businessId}/payments`),
+  getSquareConfig: () => api.get('/subscriptions/square-config'),
   createCheckout: (businessId, plan) => api.post('/subscriptions/checkout', { businessId, plan }),
+  payWithCard: (businessId, plan, sourceId, verificationToken) =>
+    api.post('/subscriptions/pay-with-card', {
+      businessId,
+      plan,
+      sourceId,
+      ...(verificationToken ? { verificationToken } : {}),
+    }),
+  updatePaymentMethod: (businessId, sourceId, verificationToken) =>
+    api.post('/subscriptions/update-payment-method', {
+      businessId,
+      sourceId,
+      ...(verificationToken ? { verificationToken } : {}),
+    }),
   confirmCheckout: (businessId) => api.post('/subscriptions/confirm-checkout', { businessId }),
   cancelSubscription: (businessId) => api.post('/subscriptions/cancel', { businessId }),
   getTeam: (businessId) => api.get(`/team/${businessId}`),

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { CreditCard } from 'lucide-react'
+import SquareCardCheckout from '../components/SquareCardCheckout'
 import { useAuth } from '../context/AuthContext'
 import { businessApi, ApiError } from '../services/api'
 
@@ -36,7 +37,7 @@ function ActionButton({ children, disabled, onClick, secondary = false }) {
 }
 
 export default function SubscriptionPage() {
-  const { business } = useAuth()
+  const { business, user } = useAuth()
   const [searchParams] = useSearchParams()
   const [subscription, setSubscription] = useState(null)
   const [payments, setPayments] = useState([])
@@ -44,6 +45,7 @@ export default function SubscriptionPage() {
   const [workingPlan, setWorkingPlan] = useState('')
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
+  const [checkoutPlan, setCheckoutPlan] = useState(null)
 
   const currentPlan = subscription?.plan || 'free'
 
@@ -104,30 +106,55 @@ export default function SubscriptionPage() {
   }, [searchParams, business?.id])
 
   const squareReady = useMemo(() => Boolean(subscription?.squareConfigured), [subscription])
+  const cardReady = useMemo(() => Boolean(subscription?.cardPaymentsEnabled), [subscription])
   const catalog = subscription?.catalog || []
   const entitlements = subscription?.entitlements
   const primaryCurrency = catalog.find((plan) => plan.currency)?.currency || 'GBP'
+  const canChangePaymentMethod = Boolean(
+    currentPlan !== 'free' && subscription?.square_subscription_id && cardReady,
+  )
 
-  const upgrade = async (plan) => {
+  const upgrade = (plan) => {
     if (!business?.id) return
-    setWorkingPlan(plan)
     setError('')
     setMessage('')
-    try {
-      const result = await businessApi.createCheckout(business.id, plan)
-      if (result?.url) {
-        if (result.sandboxMode) {
-          setMessage('Opening Square sandbox checkout. Use a sandbox test card to pay.')
-        }
-        window.location.href = result.url
-        return
-      }
-      throw new Error('Square checkout URL missing')
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Failed to start Square checkout')
-    } finally {
-      setWorkingPlan('')
-    }
+    const planMeta = catalog.find((item) => item.key === plan)
+    setCheckoutPlan({
+      mode: 'subscribe',
+      key: plan,
+      name: planMeta?.name || plan,
+      priceLabel: planMeta?.priceLabel || '',
+      amountCents: planMeta?.monthlyAmountCents || 0,
+      currency: planMeta?.currency || primaryCurrency,
+    })
+  }
+
+  const openChangePaymentMethod = () => {
+    if (!business?.id) return
+    setError('')
+    setMessage('')
+    const planMeta = catalog.find((item) => item.key === currentPlan)
+    setCheckoutPlan({
+      mode: 'update',
+      key: currentPlan,
+      name: planMeta?.name || currentPlan,
+      priceLabel: planMeta?.priceLabel || '',
+      amountCents: planMeta?.monthlyAmountCents || 0,
+      currency: planMeta?.currency || primaryCurrency,
+    })
+  }
+
+  const handlePaymentSuccess = async (updated) => {
+    const wasUpdate = checkoutPlan?.mode === 'update'
+    setCheckoutPlan(null)
+    setSubscription(updated)
+    setMessage(
+      wasUpdate
+        ? 'Payment method updated. Future renewals will use the new card.'
+        : `Payment successful. You are now on the ${updated?.plan || 'paid'} plan.`,
+    )
+    const history = await businessApi.getPayments(business.id).catch(() => [])
+    setPayments(history || [])
   }
 
   const cancel = async () => {
@@ -183,6 +210,11 @@ export default function SubscriptionPage() {
         <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
           Square billing is not fully configured on the API yet. Add Square keys to the backend `.env`, then sync plans from Billing plans.
         </div>
+      ) : !cardReady ? (
+        <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          Add <code className="font-mono text-xs">SQUARE_APPLICATION_ID</code> to the backend `.env` (from Square
+          Developer Dashboard → your app → Application ID) so card checkout can load.
+        </div>
       ) : null}
 
       <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-5">
@@ -210,14 +242,26 @@ export default function SubscriptionPage() {
           </p>
         ) : null}
         {currentPlan !== 'free' ? (
-          <button
-            type="button"
-            className="mt-4 text-sm font-medium text-slate-600 underline"
-            onClick={cancel}
-            disabled={workingPlan === 'cancel'}
-          >
-            {workingPlan === 'cancel' ? 'Cancelling...' : 'Switch to Free'}
-          </button>
+          <div className="mt-4 flex flex-wrap gap-3">
+            {canChangePaymentMethod ? (
+              <button
+                type="button"
+                className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                onClick={openChangePaymentMethod}
+                disabled={Boolean(workingPlan)}
+              >
+                Change payment method
+              </button>
+            ) : null}
+            <button
+              type="button"
+              className="text-sm font-medium text-slate-600 underline"
+              onClick={cancel}
+              disabled={workingPlan === 'cancel'}
+            >
+              {workingPlan === 'cancel' ? 'Cancelling...' : 'Switch to Free'}
+            </button>
+          </div>
         ) : null}
       </div>
 
@@ -267,18 +311,16 @@ export default function SubscriptionPage() {
               ) : (
                 <>
                   <ActionButton
-                    disabled={(!canRetry && isCurrent) || Boolean(workingPlan) || !squareReady || !checkoutable}
+                    disabled={(!canRetry && isCurrent) || Boolean(workingPlan) || !squareReady || !cardReady || !checkoutable}
                     onClick={() => upgrade(plan.key)}
                   >
-                    {workingPlan === plan.key
-                      ? 'Redirecting to Square...'
-                      : canRetry
-                        ? 'Retry monthly payment'
-                        : isCurrent
-                          ? 'Current plan'
-                          : plan.checkout === 'trial'
-                            ? 'Try free for 14 days'
-                            : plan.ctaLabel || 'Buy now'}
+                    {canRetry
+                      ? 'Retry monthly payment'
+                      : isCurrent
+                        ? 'Current plan'
+                        : plan.checkout === 'trial'
+                          ? 'Try free for 14 days'
+                          : plan.ctaLabel || 'Buy now'}
                   </ActionButton>
                 </>
               )}
@@ -326,6 +368,21 @@ export default function SubscriptionPage() {
           </div>
         )}
       </div>
+
+      <SquareCardCheckout
+        open={Boolean(checkoutPlan)}
+        mode={checkoutPlan?.mode || 'subscribe'}
+        planKey={checkoutPlan?.key}
+        planName={checkoutPlan?.name}
+        priceLabel={checkoutPlan?.priceLabel}
+        amountCents={checkoutPlan?.amountCents}
+        currency={checkoutPlan?.currency}
+        businessId={business?.id}
+        buyerEmail={user?.email || business?.email || ''}
+        buyerName={user?.name || business?.name || ''}
+        onClose={() => setCheckoutPlan(null)}
+        onSuccess={handlePaymentSuccess}
+      />
     </div>
   )
 }
