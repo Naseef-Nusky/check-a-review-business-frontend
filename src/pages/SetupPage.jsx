@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import LogoUploader from '../components/LogoUploader'
 import { useAuth } from '../context/AuthContext'
 import { businessApi } from '../services/api'
-import { APP_NAME } from '../utils/constants'
+import { APP_NAME, PUBLIC_SITE_URL } from '../utils/constants'
 import { BUSINESS_LOCATIONS } from '../utils/locations'
 import { stashPendingBusinessLogo } from '../utils/pendingLogo'
 
@@ -426,7 +426,19 @@ Contact: ${form.firstName} ${form.lastName}`.trim(),
               </div>
 
               <p className="pt-2 text-xs leading-relaxed text-slate-500">
-                By submitting this form, {APP_NAME} will use your contact details to discuss our products and services. We collect, use, and protect your personal data in line with our privacy policy.
+                By submitting this form, {APP_NAME} will use your contact details to discuss our products and services. We
+                collect, use, and protect your personal data in line with our{' '}
+                <a href={`${PUBLIC_SITE_URL}/privacy`} className="font-medium text-primary-700 hover:text-primary-800">
+                  Privacy Policy
+                </a>{' '}
+                and{' '}
+                <a
+                  href={`${PUBLIC_SITE_URL}/terms/business`}
+                  className="font-medium text-primary-700 hover:text-primary-800"
+                >
+                  Business Terms
+                </a>
+                .
               </p>
             </form>
           </div>

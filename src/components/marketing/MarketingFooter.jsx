@@ -6,9 +6,6 @@ const columns = [
     title: 'About us',
     links: [
       { label: 'How it works', href: '/how-it-works' },
-      { label: 'Our story', href: '#' },
-      { label: 'Press', href: '#' },
-      { label: 'Careers', href: '#' },
     ],
   },
   {
@@ -43,9 +40,9 @@ const columns = [
     links: [
       { label: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}` },
       { label: 'Contact sales', href: '/setup' },
-      { label: 'Status', href: '#' },
-      { label: 'Legal', href: '#' },
-      { label: 'Privacy', href: '#' },
+      { label: 'Privacy', href: `${PUBLIC_SITE_URL}/privacy` },
+      { label: 'Business terms', href: `${PUBLIC_SITE_URL}/terms/business` },
+      { label: 'Reviewer terms', href: `${PUBLIC_SITE_URL}/terms` },
     ],
   },
 ]
@@ -115,7 +112,8 @@ export default function MarketingFooter() {
             <a href={PUBLIC_SITE_URL} className="hover:text-white">Consumer site</a>
             <Link to="/login" className="hover:text-white">Business login</Link>
             <Link to="/pricing" className="hover:text-white">Pricing</Link>
-            <a href="#" className="hover:text-white">Privacy</a>
+            <a href={`${PUBLIC_SITE_URL}/privacy`} className="hover:text-white">Privacy</a>
+            <a href={`${PUBLIC_SITE_URL}/terms/business`} className="hover:text-white">Terms</a>
           </div>
         </div>
       </div>

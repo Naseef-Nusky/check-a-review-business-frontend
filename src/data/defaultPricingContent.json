@@ -1,0 +1,228 @@
+{
+  "heroTitle": "Turn trust into growth with Check A Review",
+  "heroSubtitle": "Plans built like a modern review platform: collect feedback, showcase TrustScore, and convert trust into demand.",
+  "billingNote": "Paid plans are priced and billed monthly in USD. Plus and Premium are billed per domain.",
+  "trustBadge": "14-day free trial on Plus",
+  "logos": [],
+  "steps": [
+    {
+      "title": "Pick your plan",
+      "description": "Start with Starter, grow into Plus, or upgrade to Premium for richer insights."
+    },
+    {
+      "title": "Collect more reviews",
+      "description": "Send monthly invitations within your plan quota and follow up with customers."
+    },
+    {
+      "title": "Showcase trust",
+      "description": "Embed widgets on your allowed domains and match your public profile to your brand."
+    },
+    {
+      "title": "Learn and improve",
+      "description": "Use analytics and, on higher plans, richer dashboards plus a customer success manager."
+    }
+  ],
+  "plans": [
+    {
+      "key": "starter",
+      "name": "Starter",
+      "price": "$99",
+      "period": "/month",
+      "description": "Start growing trust. One website — for small businesses getting started with reviews.",
+      "badge": "",
+      "ctaLabel": "Buy now",
+      "highlighted": false,
+      "users": "1",
+      "domains": "1",
+      "features": [
+        "100 review invitations per month",
+        "2 widgets to collect reviews and showcase trust",
+        "1 user",
+        "1 domain",
+        "15 integrations into marketing and eCommerce tools",
+        "Power your ads with Check A Review marketing assets"
+      ],
+      "notes": [
+        "Designed for small businesses (up to $5M revenue).",
+        "Available to new customers only."
+      ]
+    },
+    {
+      "key": "plus",
+      "name": "Plus",
+      "price": "$319",
+      "period": "/month, per domain",
+      "description": "Turn trust into demand. Up to 3 websites — for businesses growing review volume across domains.",
+      "badge": "Popular",
+      "ctaLabel": "Try free for 14 days",
+      "highlighted": true,
+      "users": "3",
+      "domains": "3",
+      "features": [
+        "300 review invitations per month",
+        "10 widgets to collect reviews and showcase TrustScore",
+        "3 users",
+        "Up to 3 domains",
+        "All integrations",
+        "Power your ads with Check A Review marketing assets",
+        "Match your public profile to your brand"
+      ],
+      "notes": []
+    },
+    {
+      "key": "premium",
+      "name": "Premium",
+      "price": "$799",
+      "period": "/month, per domain",
+      "description": "Make feedback your competitive edge. Unlimited domains — for larger teams that need richer data and support.",
+      "badge": "",
+      "ctaLabel": "Book demo",
+      "highlighted": false,
+      "users": "10",
+      "domains": "Unlimited",
+      "features": [
+        "1,000 review invitations per month",
+        "21 widgets to showcase TrustScore and testimonials",
+        "10 users",
+        "Unlimited domains",
+        "All integrations",
+        "Power your ads with Check A Review marketing assets",
+        "Match your public profile to your brand",
+        "Dedicated Customer Success Manager",
+        "More dashboards with richer data, insights, and trends"
+      ],
+      "notes": []
+    }
+  ],
+  "comparisonSections": [
+    {
+      "title": "Collect reviews",
+      "rows": [
+        {
+          "label": "Users",
+          "values": {
+            "starter": "1",
+            "plus": "3",
+            "premium": "10"
+          }
+        },
+        {
+          "label": "Domains",
+          "values": {
+            "starter": "1",
+            "plus": "3",
+            "premium": "Unlimited"
+          }
+        },
+        {
+          "label": "Monthly review invitations",
+          "values": {
+            "starter": "100",
+            "plus": "300",
+            "premium": "1000"
+          }
+        },
+        {
+          "label": "Widgets",
+          "values": {
+            "starter": "2",
+            "plus": "10",
+            "premium": "21"
+          }
+        },
+        {
+          "label": "Integrations",
+          "values": {
+            "starter": "15",
+            "plus": "All",
+            "premium": "All"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Convert trust",
+      "rows": [
+        {
+          "label": "Public business profile",
+          "values": {
+            "starter": true,
+            "plus": true,
+            "premium": true
+          }
+        },
+        {
+          "label": "Marketing assets",
+          "values": {
+            "starter": true,
+            "plus": true,
+            "premium": true
+          }
+        },
+        {
+          "label": "Match profile to your brand",
+          "values": {
+            "starter": false,
+            "plus": true,
+            "premium": true
+          }
+        }
+      ]
+    },
+    {
+      "title": "Insights and support",
+      "rows": [
+        {
+          "label": "Basic analytics",
+          "values": {
+            "starter": true,
+            "plus": true,
+            "premium": true
+          }
+        },
+        {
+          "label": "Richer dashboards and trends",
+          "values": {
+            "starter": false,
+            "plus": false,
+            "premium": true
+          }
+        },
+        {
+          "label": "Dedicated Customer Success Manager",
+          "values": {
+            "starter": false,
+            "plus": false,
+            "premium": true
+          }
+        },
+        {
+          "label": "14-day free trial",
+          "values": {
+            "starter": false,
+            "plus": true,
+            "premium": false
+          }
+        }
+      ]
+    }
+  ],
+  "faqs": [
+    {
+      "question": "Are prices billed monthly or annually?",
+      "answer": "Prices are shown per month in USD and billed monthly. Plus and Premium are billed per active domain."
+    },
+    {
+      "question": "Does Plus include a free trial?",
+      "answer": "Yes. Plus includes a 14-day free trial for new customers before monthly billing begins."
+    },
+    {
+      "question": "How do I get Premium?",
+      "answer": "Choose Premium from the business portal subscription page and complete Square checkout."
+    },
+    {
+      "question": "Can I change plans later?",
+      "answer": "Yes. Upgrade any time from the business portal. Downgrading to Free cancels the paid Square subscription."
+    }
+  ]
+}
