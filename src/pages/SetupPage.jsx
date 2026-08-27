@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { CheckCircle2, ChevronDown, X } from 'lucide-react'
+import { CheckCircle2, ChevronDown } from 'lucide-react'
 import PasswordInput from '../components/PasswordInput'
 import { Link, useNavigate } from 'react-router-dom'
 import LogoUploader from '../components/LogoUploader'
@@ -8,12 +8,12 @@ import { businessApi } from '../services/api'
 import { APP_NAME, PUBLIC_SITE_URL } from '../utils/constants'
 import { BUSINESS_LOCATIONS } from '../utils/locations'
 import { stashPendingBusinessLogo } from '../utils/pendingLogo'
+import { PHONE_COUNTRY_CODES } from '../utils/phoneCountryCodes'
 
 const steps = ['Business details', 'Additional details', 'Personal details', 'Activate account']
 
-const revenueOptions = ['Under $500K', '$500K - $4.99 million', '$5 million - $24.99 million', '$25 million+']
+const revenueOptions = ['Under £500K', '£500K - £4.99 million', '£5 million - £24.99 million', '£25 million+']
 const employeeOptions = ['1-9', '10-49', '50-249', '250-999', '1000+']
-const phoneCodes = ['+1', '+44', '+61', '+91', '+971']
 
 function ProgressSteps({ step }) {
   return (
@@ -60,7 +60,8 @@ export default function SetupPage() {
     firstName: '',
     lastName: '',
     email: '',
-    phoneCode: '+91',
+    phoneCode: '+44',
+    phoneCountry: 'United Kingdom',
     phone: '',
     password: '',
   })
@@ -69,7 +70,6 @@ export default function SetupPage() {
   const [logoPreview, setLogoPreview] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [showPlusModal, setShowPlusModal] = useState(false)
   const { login, refreshBusiness, isAuthenticated } = useAuth()
   const navigate = useNavigate()
 
@@ -150,9 +150,6 @@ export default function SetupPage() {
     }
 
     if (step < steps.length - 1) {
-      if (step === 1) {
-        setShowPlusModal(true)
-      }
       setStep((s) => s + 1)
       return
     }
@@ -370,11 +367,25 @@ Contact: ${form.firstName} ${form.lastName}`.trim(),
 
                   <div className="sm:col-span-2">
                     <label className="label-text text-slate-700" htmlFor="phone">Phone number</label>
-                    <div className="grid grid-cols-[88px_minmax(0,1fr)] gap-3">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(11rem,14rem)_minmax(0,1fr)]">
                       <div className="relative">
-                        <select id="phoneCode" className="input-field appearance-none pr-10" value={form.phoneCode} onChange={update('phoneCode')}>
-                          {phoneCodes.map((code) => (
-                            <option key={code} value={code}>{code}</option>
+                        <select
+                          id="phoneCode"
+                          className="input-field appearance-none pr-10"
+                          value={`${form.phoneCode}|${form.phoneCountry || ''}`}
+                          onChange={(e) => {
+                            const [code, ...nameParts] = e.target.value.split('|')
+                            setForm((prev) => ({
+                              ...prev,
+                              phoneCode: code,
+                              phoneCountry: nameParts.join('|'),
+                            }))
+                          }}
+                        >
+                          {PHONE_COUNTRY_CODES.map((country) => (
+                            <option key={`${country.name}-${country.code}`} value={`${country.code}|${country.name}`}>
+                              {country.name} ({country.code})
+                            </option>
                           ))}
                         </select>
                         <SelectChevron />
@@ -444,57 +455,6 @@ Contact: ${form.firstName} ${form.lastName}`.trim(),
           </div>
         </div>
       </section>
-
-      {showPlusModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/35 px-4">
-          <div className="w-full max-w-3xl overflow-hidden rounded-3xl bg-white shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
-              <h2 className="text-3xl font-semibold text-slate-900">Try Plus for 14 days - on us</h2>
-              <button type="button" className="rounded-full border border-slate-200 p-2 text-slate-400 hover:text-slate-700" onClick={() => setShowPlusModal(false)}>
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <div className="grid gap-6 px-8 py-7 md:grid-cols-[200px_minmax(0,1fr)]">
-              <div className="flex items-center justify-center">
-                <div className="relative h-40 w-32 rounded-3xl bg-yellow-300 shadow-lg">
-                  <div className="absolute -left-5 top-10 h-24 w-20 rotate-[-18deg] rounded-2xl border-4 border-slate-900 bg-white shadow-md" />
-                  <div className="absolute -right-8 bottom-6 h-20 w-28 rounded-2xl bg-white p-3 shadow-md">
-                    <div className="h-3 w-14 rounded bg-primary-200" />
-                    <div className="mt-2 flex gap-1 text-emerald-500">★★★★★</div>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <h3 className="text-2xl font-semibold text-slate-900">More tools to showcase your business</h3>
-                <p className="mt-4 text-sm leading-relaxed text-slate-600">
-                  Based on the details you shared, similar businesses choose Plus to get more invitations, marketing tools, and analytics to grow and showcase their reputation.
-                </p>
-                <ul className="mt-6 space-y-3 text-sm text-slate-700">
-                  {[
-                    '300 review invitations',
-                    '10 trust widgets for websites, email, and social',
-                    '59 integrations for your eCommerce and sales tools',
-                    'Customizable business profile page',
-                  ].map((item) => (
-                    <li key={item} className="flex items-start gap-3">
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-slate-700" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            <div className="flex flex-col-reverse gap-3 border-t border-slate-200 px-6 py-5 sm:flex-row sm:justify-end">
-              <button type="button" className="rounded-full bg-slate-100 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-200" onClick={() => setShowPlusModal(false)}>
-                No, thanks
-              </button>
-              <button type="button" className="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-800" onClick={() => setShowPlusModal(false)}>
-                Try Plus for 14 days - free
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

@@ -6,16 +6,24 @@ export default function PasswordInput({
   label = 'Password',
   className = '',
   labelClassName = 'label-text text-slate-700',
+  labelRight = null,
   ...props
 }) {
   const [showPassword, setShowPassword] = useState(false)
 
   return (
     <div>
-      {label && (
-        <label htmlFor={id} className={labelClassName}>
-          {label}
-        </label>
+      {(label || labelRight) && (
+        <div className="mb-0 flex items-center justify-between gap-2">
+          {label ? (
+            <label htmlFor={id} className={labelClassName}>
+              {label}
+            </label>
+          ) : (
+            <span />
+          )}
+          {labelRight}
+        </div>
       )}
       <div className="relative">
         <input

@@ -24,6 +24,13 @@ export function AuthProvider({ children }) {
     setBusiness(null)
   }, [])
 
+  const clearSession = useCallback(() => {
+    localStorage.removeItem('business_user')
+    localStorage.removeItem('business_token')
+    setUser(null)
+    setBusiness(null)
+  }, [])
+
   const refreshBusiness = useCallback(async () => {
     const profile = await businessApi.getMyProfile()
     setBusiness(profile)
@@ -69,6 +76,7 @@ export function AuthProvider({ children }) {
         setBusiness,
         login,
         logout,
+        clearSession,
         refreshBusiness,
         bootstrapping,
         isAuthenticated: !!user && user.role === 'business',

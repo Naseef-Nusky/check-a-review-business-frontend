@@ -5,7 +5,7 @@ import { businessApi } from '../services/api'
 import { resolveMediaUrl } from '../utils/constants'
 import { BUSINESS_LOCATIONS } from '../utils/locations'
 
-const REVENUE_OPTIONS = ['Under $500K', '$500K - $4.99 million', '$5 million - $24.99 million', '$25 million+']
+const REVENUE_OPTIONS = ['Under £500K', '£500K - £4.99 million', '£5 million - £24.99 million', '£25 million+']
 const EMPLOYEE_OPTIONS = ['1-9', '10-49', '50-249', '250-999', '1000+']
 
 function parseLocationFromDescription(description = '') {

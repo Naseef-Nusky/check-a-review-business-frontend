@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes, useSearchParams } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import LandingGate from './components/LandingGate'
@@ -16,6 +16,7 @@ import RespondToReviewsPage from './pages/features/RespondToReviewsPage'
 import ProfilePageCustomizationPage from './pages/features/ProfilePageCustomizationPage'
 import DashboardPage from './pages/DashboardPage'
 import ProfilePage from './pages/ProfilePage'
+import SettingsPage from './pages/SettingsPage'
 import ReviewsPage from './pages/ReviewsPage'
 import InvitationsPage from './pages/InvitationsPage'
 import AnalyticsPage from './pages/AnalyticsPage'
@@ -30,6 +31,10 @@ import AcceptTeamInvitePage from './pages/AcceptTeamInvitePage'
 
 function PublicOnly({ children }) {
   const { isAuthenticated, bootstrapping } = useAuth()
+  const [searchParams] = useSearchParams()
+  const allowWhileAuthed =
+    searchParams.get('token') || searchParams.get('forgot') === '1'
+
   if (bootstrapping) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-950 text-sm text-slate-400">
@@ -37,8 +42,19 @@ function PublicOnly({ children }) {
       </div>
     )
   }
-  if (isAuthenticated) return <Navigate to="/dashboard" replace />
+  if (isAuthenticated && !allowWhileAuthed) return <Navigate to="/dashboard" replace />
   return children
+}
+
+function ResetPasswordRedirect() {
+  const [searchParams] = useSearchParams()
+  const token = searchParams.get('token')
+  return (
+    <Navigate
+      to={token ? `/login?token=${encodeURIComponent(token)}` : '/login?forgot=1'}
+      replace
+    />
+  )
 }
 
 export default function App() {
@@ -62,6 +78,11 @@ export default function App() {
                   <LoginPage />
                 </PublicOnly>
               }
+            />
+            <Route path="/forgot-password" element={<Navigate to="/login?forgot=1" replace />} />
+            <Route
+              path="/reset-password"
+              element={<ResetPasswordRedirect />}
             />
             <Route
               path="/verify-email"
@@ -96,7 +117,7 @@ export default function App() {
               <Route path="integrations" element={<IntegrationsPage />} />
               <Route path="marketing-assets" element={<MarketingAssetsPage />} />
               <Route path="subscription" element={<SubscriptionPage />} />
-              <Route path="settings" element={<ProfilePage />} />
+              <Route path="settings" element={<SettingsPage />} />
             </Route>
           </Route>
 
