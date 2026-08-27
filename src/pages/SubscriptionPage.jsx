@@ -234,6 +234,23 @@ export default function SubscriptionPage() {
         ) : currentPlan !== 'free' ? (
           <p className="mt-1 text-sm text-slate-600">This plan renews automatically every month through Square.</p>
         ) : null}
+        {subscription?.paymentMethod?.last4 ? (
+          <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
+            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Payment method</p>
+            <p className="mt-1 text-sm font-semibold text-slate-900">
+              {String(subscription.paymentMethod.brand || 'Card')
+                .replace(/_/g, ' ')
+                .toLowerCase()
+                .replace(/\b\w/g, (c) => c.toUpperCase())}{' '}
+              •••• {subscription.paymentMethod.last4}
+              {subscription.paymentMethod.expMonth && subscription.paymentMethod.expYear
+                ? ` · Expires ${String(subscription.paymentMethod.expMonth).padStart(2, '0')}/${String(
+                    subscription.paymentMethod.expYear,
+                  ).slice(-2)}`
+                : ''}
+            </p>
+          </div>
+        ) : null}
         {entitlements ? (
           <p className="mt-2 text-sm text-slate-600">
             {entitlements.usage.invitationsThisMonth}/{entitlements.limits.invitationsPerMonthLabel} invitations this
@@ -380,6 +397,7 @@ export default function SubscriptionPage() {
         businessId={business?.id}
         buyerEmail={user?.email || business?.email || ''}
         buyerName={user?.name || business?.name || ''}
+        currentPaymentMethod={subscription?.paymentMethod || null}
         onClose={() => setCheckoutPlan(null)}
         onSuccess={handlePaymentSuccess}
       />
