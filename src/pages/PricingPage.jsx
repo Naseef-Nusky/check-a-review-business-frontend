@@ -228,7 +228,8 @@ export default function PricingPage() {
             </h2>
           </div>
 
-          <div className="mt-12 overflow-hidden rounded-[2rem] border border-border bg-white shadow-soft">
+          <div className="mt-12 overflow-x-auto rounded-[2rem] border border-border bg-white shadow-soft">
+            <div className="min-w-[640px]">
             <div className="grid border-b border-border bg-slate-900 text-white" style={comparisonGridStyle}>
               <div className="px-5 py-4 text-sm font-semibold">Features</div>
               {pricing.plans.map((plan) => (
@@ -260,6 +261,7 @@ export default function PricingPage() {
               </div>
             ))}
           </div>
+            </div>
         </div>
       </section>
 

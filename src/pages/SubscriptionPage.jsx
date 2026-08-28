@@ -380,7 +380,7 @@ export default function SubscriptionPage() {
           <p className="mt-2 text-sm text-slate-500">Square payments will appear here after checkout.</p>
         ) : (
           <div className="mt-4 overflow-x-auto">
-            <table className="min-w-full text-left text-sm">
+            <table className="min-w-[32rem] w-full text-left text-sm">
               <thead className="text-slate-500">
                 <tr>
                   <th className="px-2 py-2 font-medium">Date</th>

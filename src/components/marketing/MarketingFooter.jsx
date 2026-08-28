@@ -83,7 +83,7 @@ export default function MarketingFooter() {
   return (
     <footer className="bg-slate-950 text-slate-300">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
           {columns.map((col) => (
             <div key={col.title}>
               <h3 className="text-sm font-semibold text-white">{col.title}</h3>

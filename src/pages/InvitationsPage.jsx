@@ -87,8 +87,8 @@ export default function InvitationsPage() {
         </button>
       </form>
 
-      <div className="card overflow-hidden">
-        <table className="w-full text-left text-sm">
+      <div className="card table-scroll">
+        <table className="min-w-[36rem] w-full text-left text-sm">
           <thead className="border-b border-border bg-slate-50 text-slate-600">
             <tr>
               <th className="px-4 py-3 font-medium">Email</th>

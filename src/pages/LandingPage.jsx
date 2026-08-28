@@ -148,7 +148,7 @@ export default function LandingPage() {
             <input
               name="q"
               type="search"
-              placeholder="Search your company name..."
+              placeholder="Search companies..."
               className="flex-1 border-0 bg-transparent px-6 py-4 text-sm outline-none"
             />
             <button

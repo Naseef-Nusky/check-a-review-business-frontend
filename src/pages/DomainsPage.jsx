@@ -157,11 +157,11 @@ export default function DomainsPage() {
         </div>
       ) : null}
 
-      <div className="card overflow-hidden">
+      <div className="card table-scroll">
         {loading ? (
           <p className="p-5 text-sm text-slate-500">Loading domains...</p>
         ) : (
-          <table className="w-full text-left text-sm">
+          <table className="min-w-[36rem] w-full text-left text-sm">
             <thead className="border-b border-border bg-slate-50 text-slate-600">
               <tr>
                 <th className="px-4 py-3 font-medium">Domain</th>

@@ -148,6 +148,11 @@
     opacity: 1;
     transform: translateY(0);
   }
+
+  .table-scroll {
+    @apply overflow-x-auto overscroll-x-contain;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 @keyframes trust-stats-ken {
