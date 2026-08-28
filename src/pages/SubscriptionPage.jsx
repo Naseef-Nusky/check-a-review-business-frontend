@@ -208,9 +208,20 @@ export default function SubscriptionPage() {
         </div>
       </div>
 
-      {subscription?.status === 'past_due' ? (
+      {subscription?.featuresSuspended ? (
+        <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          Your monthly renewal is overdue and the 21-day grace period has ended. Paid features are paused until
+          payment succeeds. Retry payment below to restore your {subscription?.billingPlan || currentPlan} plan.
+        </div>
+      ) : subscription?.paymentOverdue ? (
         <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          Your monthly renewal payment failed. Retry payment below to keep {currentPlan} active.
+          Your monthly renewal payment failed. You still have{' '}
+          <strong>{subscription.graceDaysRemaining || 0} day(s)</strong> to retry payment before paid features are
+          paused. Pay by{' '}
+          {subscription.graceEndsAt
+            ? formatPlanDate(subscription.graceEndsAt)
+            : 'the end of the grace period'}{' '}
+          to keep your {subscription?.billingPlan || currentPlan} plan active.
         </div>
       ) : null}
       {cancellationScheduled && currentPlan !== 'free' ? (
@@ -251,8 +262,10 @@ export default function SubscriptionPage() {
         </p>
         {subscription?.current_period_end && currentPlan !== 'free' ? (
           <p className="mt-1 text-sm text-slate-600">
-            {subscription.status === 'past_due'
-              ? 'Monthly renewal payment failed. Retry checkout to keep this plan.'
+            {subscription.featuresSuspended
+              ? 'Paid features are paused. Retry payment to restore your plan.'
+              : subscription.paymentOverdue
+                ? `Renewal payment failed. ${subscription.graceDaysRemaining || 0} day(s) left in the grace period.`
               : cancellationScheduled
                 ? `Access until ${formatPlanDate(cancelAccessUntil)}. No further charges after that date.`
                 : `Auto-renews monthly on ${formatPlanDate(subscription.current_period_end)}.`}
@@ -313,7 +326,7 @@ export default function SubscriptionPage() {
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
         {catalog.map((plan) => {
           const isCurrent = currentPlan === plan.key
-          const pastDue = subscription?.status === 'past_due'
+          const pastDue = subscription?.status === 'past_due' || subscription?.paymentOverdue
           const checkoutable = ['buy', 'trial', 'demo'].includes(plan.checkout)
           const canRetry = pastDue && isCurrent
           return (

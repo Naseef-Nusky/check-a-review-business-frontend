@@ -1,11 +1,19 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import PasswordInput from '../components/PasswordInput'
 import { useAuth } from '../context/AuthContext'
 import { businessApi } from '../services/api'
 
+function isBusinessOwner(business, user) {
+  return Boolean(
+    business?.is_owner || (business?.user_id && user?.id && business.user_id === user.id),
+  )
+}
+
 export default function SettingsPage() {
-  const { user, login, logout } = useAuth()
-  const needsPassword = user?.has_password === false
+  const { user, business, login, logout } = useAuth()
+  const navigate = useNavigate()
+  const isOwner = isBusinessOwner(business, user)
 
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
@@ -15,6 +23,10 @@ export default function SettingsPage() {
   const [changingPassword, setChangingPassword] = useState(false)
   const [passwordError, setPasswordError] = useState('')
   const [passwordMessage, setPasswordMessage] = useState('')
+  const [deleteError, setDeleteError] = useState('')
+  const [deleting, setDeleting] = useState(false)
+
+  const needsPassword = user?.has_password === false
 
   const handleChangePassword = async (e) => {
     e.preventDefault()
@@ -58,6 +70,26 @@ export default function SettingsPage() {
     }
   }
 
+  const handleDeleteBusiness = async () => {
+    if (!business?.id) return
+
+    const confirmed = window.confirm(
+      `Remove business "${business.name}"?\n\nThis permanently deletes your business profile, reviews, subscription, and owner account. This cannot be undone.`,
+    )
+    if (!confirmed) return
+
+    setDeleting(true)
+    setDeleteError('')
+    try {
+      await businessApi.deleteBusiness(business.id)
+      logout()
+      navigate('/', { replace: true })
+    } catch (err) {
+      setDeleteError(err.message || 'Failed to remove business')
+      setDeleting(false)
+    }
+  }
+
   return (
     <div className="max-w-2xl space-y-6">
       <div>
@@ -72,6 +104,9 @@ export default function SettingsPage() {
         <p className="mt-1 text-sm text-ink-muted">Signed in as {user?.email || '—'}</p>
         {user?.name ? (
           <p className="mt-1 text-sm text-slate-600">{user.name}</p>
+        ) : null}
+        {business?.name ? (
+          <p className="mt-1 text-sm text-slate-600">{business.name}</p>
         ) : null}
       </section>
 
@@ -161,6 +196,30 @@ export default function SettingsPage() {
           Sign out
         </button>
       </section>
+
+      {isOwner ? (
+        <section className="card border-red-200 p-6">
+          <h3 className="text-base font-semibold text-red-700">Remove business</h3>
+          <p className="mt-1 text-sm text-ink-muted">
+            Permanently delete {business?.name || 'your business'}, including published reviews,
+            team access, domains, and your owner account. Any active Square subscription will be
+            cancelled first.
+          </p>
+          {deleteError ? (
+            <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {deleteError}
+            </div>
+          ) : null}
+          <button
+            type="button"
+            onClick={handleDeleteBusiness}
+            disabled={deleting || !business?.id}
+            className="mt-4 rounded-full border border-red-300 bg-white px-5 py-2.5 text-sm font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {deleting ? 'Removing...' : 'Remove business permanently'}
+          </button>
+        </section>
+      ) : null}
     </div>
   )
 }

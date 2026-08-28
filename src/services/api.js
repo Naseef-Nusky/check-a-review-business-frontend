@@ -102,6 +102,7 @@ export const businessApi = {
   setPrimaryDomain: (businessId, domainId) =>
     api.patch(`/domains/${businessId}/${domainId}/primary`),
   removeDomain: (businessId, domainId) => api.delete(`/domains/${businessId}/${domainId}`),
+  deleteBusiness: (businessId) => api.delete(`/businesses/${businessId}`),
 }
 
 export { ApiError }
