@@ -1,7 +1,7 @@
 {
   "heroTitle": "Turn trust into growth with Check A Review",
   "heroSubtitle": "Plans built like a modern review platform: collect feedback, showcase TrustScore, and convert trust into demand.",
-  "billingNote": "Paid plans are priced and billed monthly in USD. Plus and Premium are billed per domain.",
+  "billingNote": "Paid plans are priced and billed monthly in USD.",
   "trustBadge": "14-day free trial on Plus",
   "logos": [],
   "steps": [
@@ -51,7 +51,7 @@
       "key": "plus",
       "name": "Plus",
       "price": "$319",
-      "period": "/month, per domain",
+      "period": "/month",
       "description": "Turn trust into demand. Up to 3 websites — for businesses growing review volume across domains.",
       "badge": "Popular",
       "ctaLabel": "Try free for 14 days",
@@ -73,7 +73,7 @@
       "key": "premium",
       "name": "Premium",
       "price": "$799",
-      "period": "/month, per domain",
+      "period": "/month",
       "description": "Make feedback your competitive edge. Unlimited domains — for larger teams that need richer data and support.",
       "badge": "",
       "ctaLabel": "Book demo",
@@ -210,7 +210,7 @@
   "faqs": [
     {
       "question": "Are prices billed monthly or annually?",
-      "answer": "Prices are shown per month in USD and billed monthly. Plus and Premium are billed per active domain."
+      "answer": "Prices are shown per month in USD and billed monthly."
     },
     {
       "question": "Does Plus include a free trial?",

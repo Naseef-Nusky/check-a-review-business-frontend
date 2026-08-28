@@ -19,6 +19,15 @@ function formatCurrencyAmount(cents, currency) {
   }
 }
 
+function formatPlanDate(value) {
+  if (!value) return 'the end of your billing period'
+  return new Date(value).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
+
 function ActionButton({ children, disabled, onClick, secondary = false }) {
   return (
     <button
@@ -46,8 +55,11 @@ export default function SubscriptionPage() {
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [checkoutPlan, setCheckoutPlan] = useState(null)
+  const [cancelModalOpen, setCancelModalOpen] = useState(false)
 
   const currentPlan = subscription?.plan || 'free'
+  const cancelAccessUntil = subscription?.cancelAtPeriodEnd || subscription?.current_period_end
+  const cancellationScheduled = Boolean(subscription?.cancellationScheduled)
 
   const load = async () => {
     if (!business?.id) return
@@ -159,13 +171,17 @@ export default function SubscriptionPage() {
 
   const cancel = async () => {
     if (!business?.id) return
-    if (!window.confirm('Cancel your paid Square subscription and return to the Free plan?')) return
+    setCancelModalOpen(false)
     setWorkingPlan('cancel')
     setError('')
     try {
       const updated = await businessApi.cancelSubscription(business.id)
       setSubscription((prev) => ({ ...prev, ...updated }))
-      setMessage('Subscription cancelled. You are now on the Free plan.')
+      const until = formatPlanDate(updated?.cancelAtPeriodEnd || updated?.current_period_end)
+      const planName = updated?.plan || currentPlan
+      setMessage(
+        `Subscription cancelled. You'll keep ${planName} until ${until}. You won't be charged again. This month's payment is not refunded.`,
+      )
       await load()
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Failed to cancel subscription')
@@ -187,8 +203,7 @@ export default function SubscriptionPage() {
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">Subscription</h1>
           <p className="mt-1 text-sm text-slate-500">
-            Paid plans are priced and billed monthly in {primaryCurrency}. Plus and Premium are billed per
-            domain.
+            Paid plans are priced and billed monthly in {primaryCurrency}.
           </p>
         </div>
       </div>
@@ -196,6 +211,16 @@ export default function SubscriptionPage() {
       {subscription?.status === 'past_due' ? (
         <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
           Your monthly renewal payment failed. Retry payment below to keep {currentPlan} active.
+        </div>
+      ) : null}
+      {cancellationScheduled && currentPlan !== 'free' ? (
+        <div className="mb-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+          <p className="font-medium text-slate-900">Cancellation scheduled</p>
+          <p className="mt-1">
+            You'll keep <span className="font-medium capitalize">{currentPlan}</span> until{' '}
+            {formatPlanDate(cancelAccessUntil)}. You won't be charged again after that date. This month's payment is
+            not refunded.
+          </p>
         </div>
       ) : null}
       {message ? (
@@ -220,16 +245,17 @@ export default function SubscriptionPage() {
       <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-5">
         <p className="text-sm text-slate-500">Current plan</p>
         <p className="mt-1 text-xl font-semibold capitalize text-slate-900">{currentPlan}</p>
-        <p className="mt-1 text-sm capitalize text-slate-500">Status: {subscription?.status || 'active'}</p>
+        <p className="mt-1 text-sm capitalize text-slate-500">
+          Status:{' '}
+          {cancellationScheduled ? 'Cancellation scheduled' : subscription?.status || 'active'}
+        </p>
         {subscription?.current_period_end && currentPlan !== 'free' ? (
           <p className="mt-1 text-sm text-slate-600">
             {subscription.status === 'past_due'
               ? 'Monthly renewal payment failed. Retry checkout to keep this plan.'
-              : `Auto-renews monthly on ${new Date(subscription.current_period_end).toLocaleDateString('en-GB', {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric',
-                })}.`}
+              : cancellationScheduled
+                ? `Access until ${formatPlanDate(cancelAccessUntil)}. No further charges after that date.`
+                : `Auto-renews monthly on ${formatPlanDate(subscription.current_period_end)}.`}
           </p>
         ) : currentPlan !== 'free' ? (
           <p className="mt-1 text-sm text-slate-600">This plan renews automatically every month through Square.</p>
@@ -260,7 +286,7 @@ export default function SubscriptionPage() {
         ) : null}
         {currentPlan !== 'free' ? (
           <div className="mt-4 flex flex-wrap gap-3">
-            {canChangePaymentMethod ? (
+            {canChangePaymentMethod && !cancellationScheduled ? (
               <button
                 type="button"
                 className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
@@ -270,14 +296,16 @@ export default function SubscriptionPage() {
                 Change payment method
               </button>
             ) : null}
-            <button
-              type="button"
-              className="text-sm font-medium text-slate-600 underline"
-              onClick={cancel}
-              disabled={workingPlan === 'cancel'}
-            >
-              {workingPlan === 'cancel' ? 'Cancelling...' : 'Switch to Free'}
-            </button>
+            {!cancellationScheduled ? (
+              <button
+                type="button"
+                className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                onClick={() => setCancelModalOpen(true)}
+                disabled={workingPlan === 'cancel'}
+              >
+                {workingPlan === 'cancel' ? 'Cancelling...' : 'Cancel subscription'}
+              </button>
+            ) : null}
           </div>
         ) : null}
       </div>
@@ -401,6 +429,46 @@ export default function SubscriptionPage() {
         onClose={() => setCheckoutPlan(null)}
         onSuccess={handlePaymentSuccess}
       />
+
+      {cancelModalOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
+            <h2 className="text-lg font-semibold text-slate-900">Cancel subscription?</h2>
+            <div className="mt-3 space-y-2 text-sm text-slate-600">
+              <p>
+                Future monthly renewals will stop. You will <strong className="text-slate-800">not be charged again</strong>{' '}
+                after the current billing period.
+              </p>
+              <p>
+                You'll keep <span className="font-medium capitalize text-slate-800">{currentPlan}</span> until{' '}
+                <span className="font-medium text-slate-800">{formatPlanDate(cancelAccessUntil)}</span>, then you'll
+                move to the Free plan.
+              </p>
+              <p>
+                <strong className="text-slate-800">This month's payment is not refunded.</strong> You keep access for the
+                time you've already paid for.
+              </p>
+            </div>
+            <div className="mt-6 flex flex-wrap justify-end gap-3">
+              <button
+                type="button"
+                className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                onClick={() => setCancelModalOpen(false)}
+              >
+                Keep subscription
+              </button>
+              <button
+                type="button"
+                className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
+                onClick={cancel}
+                disabled={workingPlan === 'cancel'}
+              >
+                {workingPlan === 'cancel' ? 'Cancelling...' : 'Cancel subscription'}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }

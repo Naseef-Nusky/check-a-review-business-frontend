@@ -99,6 +99,9 @@ function canUseApplePayBrowser() {
   }
 }
 
+const WALLET_BUTTON_CLASS =
+  'flex h-12 w-full items-center justify-center gap-2 rounded-full bg-black text-sm font-semibold text-white transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-50'
+
 export default function SquareCardCheckout({
   open,
   mode = 'subscribe',
@@ -119,10 +122,10 @@ export default function SquareCardCheckout({
   const googlePayRef = useRef(null)
   const payLockRef = useRef(false)
   const verificationRef = useRef(null)
+  const payWithGoogleRef = useRef(null)
   const [ready, setReady] = useState(false)
   const [applePayReady, setApplePayReady] = useState(false)
   const [googlePayReady, setGooglePayReady] = useState(false)
-  const [applePayHint, setApplePayHint] = useState('')
   const [paying, setPaying] = useState(false)
   const [error, setError] = useState('')
   const [sandbox, setSandbox] = useState(true)
@@ -149,7 +152,6 @@ export default function SquareCardCheckout({
       setReady(false)
       setApplePayReady(false)
       setGooglePayReady(false)
-      setApplePayHint('')
       setError('')
       try {
         const config = await businessApi.getSquareConfig()
@@ -185,32 +187,14 @@ export default function SquareCardCheckout({
         cardRef.current = cardInstance
         if (!cancelled) setReady(true)
 
-        // Apple Pay: Safari only, HTTPS domain registered with Square (not localhost).
-        if (isLocalHost()) {
-          setApplePayHint(
-            'Apple Pay cannot run on localhost. Deploy on HTTPS and register the domain in Square Developer Dashboard → Apple Pay.',
-          )
-        } else if (!canUseApplePayBrowser()) {
-          setApplePayHint(
-            'Apple Pay needs Safari on a Mac/iPhone with Apple Pay set up (Wallet + card).',
-          )
-        } else {
+        if (!isLocalHost() && canUseApplePayBrowser()) {
           try {
             const applePayInstance = await payments.applePay(buildRequest())
             applePayRef.current = applePayInstance
-            if (!cancelled) {
-              setApplePayReady(true)
-              setApplePayHint('')
-            }
-          } catch (err) {
+            if (!cancelled) setApplePayReady(true)
+          } catch {
             applePayRef.current = null
-            if (!cancelled) {
-              setApplePayReady(false)
-              setApplePayHint(
-                err?.message ||
-                  'Apple Pay is unavailable. Register this HTTPS domain in Square → Apple Pay (Sandbox/Production) and host /.well-known/apple-developer-merchantid-domain-association.',
-              )
-            }
+            if (!cancelled) setApplePayReady(false)
           }
         }
 
@@ -218,14 +202,14 @@ export default function SquareCardCheckout({
           googlePayInstance = await payments.googlePay(buildRequest())
           await googlePayInstance.attach('#square-google-pay-button', {
             buttonColor: 'black',
-            buttonType: 'long',
+            buttonType: 'plain',
             buttonSizeMode: 'fill',
           })
           googlePayRef.current = googlePayInstance
           const googleBtn = document.getElementById('square-google-pay-button')
           if (googleBtn) {
             googleBtn.onclick = () => {
-              if (!payLockRef.current) submitGooglePay()
+              if (!payLockRef.current) payWithGoogleRef.current?.()
             }
           }
           if (!cancelled) setGooglePayReady(true)
@@ -299,7 +283,6 @@ export default function SquareCardCheckout({
     if (!applePayRef.current || !businessId || payLockRef.current) return
     if (!isUpdate && !planKey) return
 
-    // Apple requires tokenize() as the first async call inside the click handler.
     payLockRef.current = true
     setPaying(true)
     setError('')
@@ -336,6 +319,8 @@ export default function SquareCardCheckout({
     }
   }
 
+  payWithGoogleRef.current = submitGooglePay
+
   const handleCardPay = async (e) => {
     e.preventDefault()
     if (!cardRef.current || !businessId || payLockRef.current) return
@@ -362,21 +347,18 @@ export default function SquareCardCheckout({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4">
       <style>{`
-        #apple-pay-button {
-          display: ${applePayReady ? 'inline-block' : 'none'};
-          -webkit-appearance: -apple-pay-button;
-          -apple-pay-button-type: plain;
-          -apple-pay-button-style: black;
-          width: 100%;
+        #square-google-pay-button {
+          display: block;
           height: 48px;
-          border-radius: 999px;
-          cursor: pointer;
-          border: none;
-          background: #000;
+          width: 100%;
+          border-radius: 9999px;
+          overflow: hidden;
         }
-        #apple-pay-button:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
+        #square-google-pay-button > * {
+          height: 48px !important;
+          min-height: 48px !important;
+          width: 100% !important;
+          border-radius: 9999px !important;
         }
       `}</style>
       <div className="w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl">
@@ -409,14 +391,7 @@ export default function SquareCardCheckout({
 
           {sandbox ? (
             <p className="rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-600">
-              Sandbox — card: <strong>4111 1111 1111 1111</strong>. Apple Pay needs Safari + registered HTTPS domain
-              (not localhost).
-            </p>
-          ) : null}
-
-          {applePayHint ? (
-            <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-              {applePayHint}
+              Sandbox test card: <strong>4111 1111 1111 1111</strong>
             </p>
           ) : null}
 
@@ -427,27 +402,40 @@ export default function SquareCardCheckout({
           ) : null}
 
           <div className="space-y-3">
-            <button
-              id="apple-pay-button"
-              type="button"
-              onClick={submitApplePay}
-              disabled={paying || !applePayReady}
-              aria-label="Pay with Apple Pay"
-            />
+            {applePayReady ? (
+              <button
+                type="button"
+                onClick={submitApplePay}
+                disabled={paying}
+                className={WALLET_BUTTON_CLASS}
+                aria-label="Pay with Apple Pay"
+              >
+                <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
+                </svg>
+                Apple Pay
+              </button>
+            ) : null}
 
             <div
               id="square-google-pay-button"
               className={
-                googlePayReady ? `min-h-[48px] w-full ${paying ? 'pointer-events-none opacity-50' : ''}` : 'hidden'
+                googlePayReady
+                  ? `h-12 w-full overflow-hidden rounded-full ${paying ? 'pointer-events-none opacity-50' : ''}`
+                  : 'hidden'
               }
+              role="button"
+              tabIndex={googlePayReady ? 0 : -1}
+              aria-label="Pay with Google Pay"
+              aria-hidden={!googlePayReady}
             />
 
-            {(applePayReady || googlePayReady) && (
+            {applePayReady || googlePayReady ? (
               <div className="relative py-1 text-center text-xs uppercase tracking-wide text-slate-400">
                 <span className="relative z-10 bg-white px-2">or pay with card</span>
                 <span className="absolute inset-x-0 top-1/2 border-t border-slate-200" />
               </div>
-            )}
+            ) : null}
           </div>
 
           <form onSubmit={handleCardPay} className="space-y-4">
