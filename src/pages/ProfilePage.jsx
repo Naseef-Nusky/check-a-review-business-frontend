@@ -470,6 +470,7 @@ export default function ProfilePage() {
               onChange={update('website')}
               placeholder="https://yourbusiness.com"
             />
+            <p className="mt-1.5 text-xs text-slate-400">Must be a live domain that resolves in DNS.</p>
           </div>
           <div>
             <label className="label-text text-slate-700" htmlFor="email">

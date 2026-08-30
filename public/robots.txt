@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /$
+Allow: /pricing
+Allow: /how-it-works
+Allow: /solutions/
+Allow: /features/
+Allow: /setup
+
+Disallow: /dashboard
+Disallow: /login
+Disallow: /verify-email
+Disallow: /team/accept
+Disallow: /forgot-password
+Disallow: /reset-password

@@ -234,6 +234,11 @@ export default function WidgetPage() {
           <p className="mt-1 text-sm text-ink-muted">
             Paste this only on your registered domains. Other websites will be blocked.
           </p>
+          <div className="mt-4 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900">
+            <strong className="font-semibold">Before going live:</strong> copy this embed code from your{' '}
+            <strong className="font-semibold">production</strong> business portal, not from localhost or staging.
+            Dev embed URLs point at local servers and will not load on your live website.
+          </div>
           <pre className="mt-4 overflow-x-auto rounded-xl bg-slate-950 p-4 text-xs text-slate-100">
             {hasDomains ? embedCode || 'Loading embed code...' : 'Add a domain to unlock your embed code.'}
           </pre>

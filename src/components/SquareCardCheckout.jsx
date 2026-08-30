@@ -128,7 +128,6 @@ export default function SquareCardCheckout({
   const [googlePayReady, setGooglePayReady] = useState(false)
   const [paying, setPaying] = useState(false)
   const [error, setError] = useState('')
-  const [sandbox, setSandbox] = useState(true)
 
   const isUpdate = mode === 'update'
 
@@ -162,7 +161,6 @@ export default function SquareCardCheckout({
           )
         }
 
-        setSandbox(config.environment !== 'production')
         const Square = await loadSquareSdk(config.environment)
         if (cancelled) return
         if (!Square) throw new Error('Square payments SDK failed to load')
@@ -387,12 +385,6 @@ export default function SquareCardCheckout({
               </p>
               <p className="mt-1 text-xs text-slate-500">Enter a new card below to replace this one.</p>
             </div>
-          ) : null}
-
-          {sandbox ? (
-            <p className="rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-600">
-              Sandbox test card: <strong>4111 1111 1111 1111</strong>
-            </p>
           ) : null}
 
           {error ? (

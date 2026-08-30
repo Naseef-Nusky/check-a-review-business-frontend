@@ -276,7 +276,9 @@ Contact: ${form.firstName} ${form.lastName}`.trim(),
                       inputMode="url"
                       autoComplete="url"
                     />
-                    <p className="mt-2 text-xs text-slate-400">Enter your website address only, e.g. yourbusiness.com</p>
+                    <p className="mt-2 text-xs text-slate-400">
+                      Enter a live website address, e.g. yourbusiness.com. We check DNS before creating the account.
+                    </p>
                   </div>
 
                   <div>

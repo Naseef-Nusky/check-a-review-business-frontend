@@ -102,6 +102,7 @@ export default function DomainsPage() {
           <h2 className="text-2xl font-semibold tracking-tight text-ink">Domains</h2>
           <p className="mt-1 text-sm text-ink-muted">
             Manage websites linked to this business. Limits follow your plan’s Domains allowance.
+            We confirm each domain exists in DNS before it is added.
           </p>
         </div>
         {isOwner || loading ? (
@@ -241,7 +242,7 @@ export default function DomainsPage() {
                   Add domain
                 </h3>
                 <p className="mt-1 text-sm text-slate-500">
-                  Example: cleanpro.co.uk or cleanpro.com
+                  Example: cleanpro.co.uk or cleanpro.com. Unused or misspelled domains are rejected.
                 </p>
               </div>
               <button
@@ -290,7 +291,7 @@ export default function DomainsPage() {
                   Cancel
                 </button>
                 <button type="submit" className="btn-primary" disabled={saving || atLimit}>
-                  {saving ? 'Adding...' : 'Add domain'}
+                  {saving ? 'Checking domain...' : 'Add domain'}
                 </button>
               </div>
             </form>
