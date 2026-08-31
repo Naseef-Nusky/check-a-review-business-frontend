@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { businessApi } from '../services/api'
 
@@ -24,18 +25,23 @@ export default function ReviewsPage() {
   const [replyDrafts, setReplyDrafts] = useState({})
   const [editingId, setEditingId] = useState('')
   const [savingId, setSavingId] = useState('')
+  const [canReply, setCanReply] = useState(false)
+  const [planName, setPlanName] = useState('Free')
 
   const load = async () => {
     setLoading(true)
     setError('')
     try {
       const profile = business || (await refreshBusiness())
-      const [result, aiSummary] = await Promise.all([
+      const [result, aiSummary, subscription] = await Promise.all([
         businessApi.getReviews(profile.id),
         businessApi.getReviewSummary(profile.id).catch(() => null),
+        businessApi.getSubscription(profile.id).catch(() => null),
       ])
       setReviews(result.reviews || [])
       setSummary(aiSummary)
+      setCanReply(Boolean(subscription?.entitlements?.flags?.canReplyToReviews))
+      setPlanName(subscription?.entitlements?.name || subscription?.plan || 'Free')
     } catch (err) {
       setError(err.message || 'Failed to load reviews')
     } finally {
@@ -98,6 +104,19 @@ export default function ReviewsPage() {
 
       {error && <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
 
+      {!loading && !canReply ? (
+        <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <p className="font-medium">Public replies are included from Starter</p>
+          <p className="mt-1 text-amber-800">
+            Your {planName} plan lets you read reviews here. Upgrade to Starter or above to publish replies on your
+            public profile.
+          </p>
+          <Link to="/subscription" className="mt-3 inline-flex text-sm font-semibold text-primary-700 hover:text-primary-800">
+            View plans & upgrade
+          </Link>
+        </div>
+      ) : null}
+
       {!loading && summary?.summary ? (
         <div className="card mb-6 border-primary-100 bg-gradient-to-br from-primary-50/70 via-white to-slate-50 p-5">
           <div className="flex flex-wrap items-center gap-2">
@@ -134,7 +153,7 @@ export default function ReviewsPage() {
         <div className="space-y-4">
           {reviews.map((review) => {
             const hasReply = Boolean(review.business_reply)
-            const isEditing = editingId === review.id || !hasReply
+            const isEditing = canReply && (editingId === review.id || !hasReply)
 
             return (
               <div key={review.id} className="card p-5">
@@ -169,16 +188,18 @@ export default function ReviewsPage() {
                           </p>
                         ) : null}
                       </div>
-                      <button
-                        type="button"
-                        className="shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
-                        onClick={() => startEdit(review)}
-                      >
-                        Edit reply
-                      </button>
+                      {canReply ? (
+                        <button
+                          type="button"
+                          className="shrink-0 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                          onClick={() => startEdit(review)}
+                        >
+                          Edit reply
+                        </button>
+                      ) : null}
                     </div>
                   </div>
-                ) : (
+                ) : canReply ? (
                   <div className="mt-4 space-y-2">
                     <label className="block text-sm font-medium text-ink">
                       {hasReply ? 'Update your public reply' : 'Reply to this customer'}
@@ -222,6 +243,10 @@ export default function ReviewsPage() {
                         </button>
                       ) : null}
                     </div>
+                  </div>
+                ) : (
+                  <div className="mt-4 rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                    Upgrade to Starter to publish a public reply on this review.
                   </div>
                 )}
               </div>

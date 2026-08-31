@@ -131,8 +131,9 @@ export default function RespondToReviewsPage() {
 
       <ClosingCta
         title="Start engaging with your customers today"
-        description="Create a free business account and reply to your first review in minutes."
-        primary={{ to: '/setup', label: 'Create free account' }}
+        description="Upgrade to Starter or above to publish public replies and show customers you listen."
+        primary={{ to: '/subscription', label: 'View Starter plan' }}
+        secondary={{ to: '/setup', label: 'Create business account' }}
         secondary={{ to: '/pricing', label: 'View pricing plans' }}
       />
     </>
