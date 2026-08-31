@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes, useSearchParams } from 'react-router-dom'
 import ScrollToTop from './components/ScrollToTop'
+import SeoDefaults from './components/seo/SeoDefaults'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import LandingGate from './components/LandingGate'
@@ -63,6 +64,7 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <ScrollToTop />
+        <SeoDefaults />
         <Routes>
           <Route element={<MarketingLayout />}>
             <Route index element={<LandingGate />} />

@@ -1,5 +1,6 @@
 import { NavLink, Outlet, Link, useLocation } from 'react-router-dom'
 import { useCallback, useEffect, useState } from 'react'
+import PortalRouteMeta from '../components/seo/PortalRouteMeta'
 import {
   BarChart3,
   Bell,
@@ -121,6 +122,7 @@ export default function PortalLayout() {
 
   return (
     <div className="min-h-screen bg-surface-muted lg:grid lg:grid-cols-[260px_1fr]">
+      <PortalRouteMeta />
       <aside className="hidden border-r border-slate-800 bg-slate-950 text-white lg:flex lg:min-h-screen lg:flex-col">
         <div className="flex h-16 shrink-0 items-center px-5">
           <Link to="/">

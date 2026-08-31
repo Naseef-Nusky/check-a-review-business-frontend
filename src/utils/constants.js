@@ -3,6 +3,10 @@ export const CONTACT_EMAIL = 'info@checkareview.com'
 export const API_BASE_URL = import.meta.env.VITE_API_URL || '/api'
 export const PUBLIC_SITE_URL = import.meta.env.VITE_PUBLIC_URL || 'http://localhost:5173'
 
+/** Business portal origin (used for SEO canonical URLs) */
+export const BUSINESS_SITE_URL =
+  import.meta.env.VITE_BUSINESS_SITE_URL || 'http://localhost:5175'
+
 export function resolveMediaUrl(path) {
   if (!path) return ''
   if (/^https?:\/\//i.test(path) || path.startsWith('blob:') || path.startsWith('data:')) {

@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import MarketingHeader from '../components/marketing/MarketingHeader'
 import MarketingFooter from '../components/marketing/MarketingFooter'
+import MarketingRouteMeta from '../components/seo/MarketingRouteMeta'
 
 export default function MarketingLayout() {
   const { pathname, hash } = useLocation()
@@ -13,6 +14,7 @@ export default function MarketingLayout() {
 
   return (
     <div className="min-h-screen bg-white text-ink">
+      <MarketingRouteMeta />
       <MarketingHeader />
       <main>
         <Outlet />

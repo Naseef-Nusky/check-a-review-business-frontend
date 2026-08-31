@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /$
 Allow: /pricing
+Allow: /contact
 Allow: /how-it-works
 Allow: /solutions/
 Allow: /features/
@@ -12,3 +13,14 @@ Disallow: /verify-email
 Disallow: /team/accept
 Disallow: /forgot-password
 Disallow: /reset-password
+Disallow: /profile
+Disallow: /reviews
+Disallow: /notifications
+Disallow: /invitations
+Disallow: /team
+Disallow: /domains
+Disallow: /analytics
+Disallow: /widget
+Disallow: /marketing-assets
+Disallow: /subscription
+Disallow: /settings
