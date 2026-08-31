@@ -24,3 +24,6 @@ Disallow: /widget
 Disallow: /marketing-assets
 Disallow: /subscription
 Disallow: /settings
+Disallow: /api/
+
+Sitemap: https://business.checkareview.com/sitemap.xml

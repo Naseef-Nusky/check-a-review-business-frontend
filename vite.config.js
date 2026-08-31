@@ -11,6 +11,11 @@ export default defineConfig({
         target: 'http://localhost:5000',
         changeOrigin: true,
       },
+      '/sitemap.xml': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        rewrite: () => '/business-sitemap.xml',
+      },
       '/uploads': {
         target: 'http://localhost:5000',
         changeOrigin: true,
