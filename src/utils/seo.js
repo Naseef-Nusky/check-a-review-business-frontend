@@ -1,4 +1,4 @@
-import { APP_NAME, BUSINESS_SITE_URL, CONTACT_EMAIL, PUBLIC_SITE_URL } from './constants'
+import { APP_NAME, BUSINESS_SITE_URL, CONTACT_EMAIL, GOOGLE_SITE_VERIFICATION, PUBLIC_SITE_URL } from './constants'
 
 export const DEFAULT_SEO = {
   title: `${APP_NAME} for Business — Collect and showcase reviews`,
@@ -84,9 +84,7 @@ export function applyPageMeta({
 export function applySiteDefaults() {
   upsertMeta('application-name', `${APP_NAME} for Business`)
   upsertMeta('theme-color', '#0f172a')
-
-  const verification = import.meta.env.VITE_GOOGLE_SITE_VERIFICATION || ''
-  upsertMeta('google-site-verification', verification)
+  upsertMeta('google-site-verification', GOOGLE_SITE_VERIFICATION)
 
   if (!document.getElementById('business-site-jsonld')) {
     const script = document.createElement('script')

@@ -7,6 +7,9 @@ export const PUBLIC_SITE_URL = import.meta.env.VITE_PUBLIC_URL || 'http://localh
 export const BUSINESS_SITE_URL =
   import.meta.env.VITE_BUSINESS_SITE_URL || 'http://localhost:5175'
 
+/** Google Search Console HTML tag verification */
+export const GOOGLE_SITE_VERIFICATION = 'zAqYnx3X42ATAbzT-ro31y6POhiR67AncXoG-uCdN6o'
+
 export function resolveMediaUrl(path) {
   if (!path) return ''
   if (/^https?:\/\//i.test(path) || path.startsWith('blob:') || path.startsWith('data:')) {
