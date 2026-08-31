@@ -142,8 +142,8 @@ export default function PricingPage() {
                   to={
                     String(plan.ctaLabel || '')
                       .toLowerCase()
-                      .includes('demo') || String(plan.price || '').toLowerCase().includes('contact')
-                      ? '/setup'
+                      .includes('contact') || String(plan.price || '').toLowerCase().includes('contact')
+                      ? '/contact'
                       : '/setup'
                   }
                   className={`mt-6 inline-flex w-full items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition ${
@@ -307,8 +307,8 @@ export default function PricingPage() {
             <Link to="/setup" className="inline-flex rounded-full bg-primary-500 px-8 py-3.5 text-sm font-semibold text-white hover:bg-primary-600">
               Create free account
             </Link>
-            <Link to="/login" className="inline-flex rounded-full border border-white/20 px-8 py-3.5 text-sm font-semibold text-white hover:bg-white/10">
-              Log in
+            <Link to="/contact" className="inline-flex rounded-full border border-white/20 px-8 py-3.5 text-sm font-semibold text-white hover:bg-white/10">
+              Contact sales
             </Link>
           </div>
         </div>

@@ -28,6 +28,7 @@ import SubscriptionPage from './pages/SubscriptionPage'
 import TeamPage from './pages/TeamPage'
 import DomainsPage from './pages/DomainsPage'
 import AcceptTeamInvitePage from './pages/AcceptTeamInvitePage'
+import ContactPage from './pages/ContactPage'
 
 function PublicOnly({ children }) {
   const { isAuthenticated, bootstrapping } = useAuth()
@@ -66,6 +67,7 @@ export default function App() {
           <Route element={<MarketingLayout />}>
             <Route index element={<LandingGate />} />
             <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/contact" element={<ContactPage />} />
             <Route path="/how-it-works" element={<HowItWorksPage />} />
             <Route path="/solutions/engage-with-feedback" element={<EngageWithFeedbackPage />} />
             <Route path="/solutions/accelerate-conversions" element={<AccelerateConversionsPage />} />

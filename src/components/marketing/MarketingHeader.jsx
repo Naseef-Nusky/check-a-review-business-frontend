@@ -37,6 +37,10 @@ const menuGroups = [
     label: 'Pricing',
     href: '/pricing',
   },
+  {
+    label: 'Contact sales',
+    href: '/contact',
+  },
 ]
 
 function MenuItem({ item, className, onClick }) {

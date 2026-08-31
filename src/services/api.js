@@ -40,6 +40,10 @@ export const api = {
   upload: (endpoint, formData) => request(endpoint, { method: 'POST', body: formData }),
 }
 
+export const publicApi = {
+  submitContact: (data) => api.post('/contact', data),
+}
+
 export const businessApi = {
   login: (email, password) => api.post('/auth/login', { email, password, role: 'business' }),
   register: (data) => api.post('/auth/register', { ...data, role: 'business' }),

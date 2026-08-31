@@ -38,8 +38,9 @@ const columns = [
   {
     title: 'Support',
     links: [
+      { label: 'Contact sales', href: '/contact' },
       { label: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}` },
-      { label: 'Contact sales', href: '/setup' },
+      { label: 'Get started', href: '/setup' },
       { label: 'Privacy', href: `${PUBLIC_SITE_URL}/privacy` },
       { label: 'Business terms', href: `${PUBLIC_SITE_URL}/terms/business` },
       { label: 'Reviewer terms', href: `${PUBLIC_SITE_URL}/terms` },
