@@ -106,10 +106,9 @@ export default function ReviewsPage() {
 
       {!loading && !canReply ? (
         <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          <p className="font-medium">Public replies are included from Starter</p>
+          <p className="font-medium">Public replies are not available on your plan</p>
           <p className="mt-1 text-amber-800">
-            Your {planName} plan lets you read reviews here. Upgrade to Starter or above to publish replies on your
-            public profile.
+            Your {planName} plan lets you read reviews here. Upgrade to publish replies on your public profile.
           </p>
           <Link to="/subscription" className="mt-3 inline-flex text-sm font-semibold text-primary-700 hover:text-primary-800">
             View plans & upgrade
@@ -246,7 +245,7 @@ export default function ReviewsPage() {
                   </div>
                 ) : (
                   <div className="mt-4 rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
-                    Upgrade to Starter to publish a public reply on this review.
+                    Upgrade your plan to publish a public reply on this review.
                   </div>
                 )}
               </div>

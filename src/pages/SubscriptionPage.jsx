@@ -292,8 +292,10 @@ export default function SubscriptionPage() {
         ) : null}
         {entitlements ? (
           <p className="mt-2 text-sm text-slate-600">
-            {entitlements.usage.invitationsThisMonth}/{entitlements.limits.invitationsPerMonthLabel} invitations this
-            month · {entitlements.usage.users}/{entitlements.limits.usersLabel} users · {entitlements.usage.domains}/
+            {Number(entitlements.limits.invitationsPerMonth) > 0
+              ? `${entitlements.usage.invitationsThisMonth}/${entitlements.limits.invitationsPerMonthLabel} invitations this month · `
+              : 'Review invitations require a paid plan · '}
+            {entitlements.usage.users}/{entitlements.limits.usersLabel} users · {entitlements.usage.domains}/
             {entitlements.limits.domainsLabel} domains · {entitlements.limits.widgetsLabel} widgets
           </p>
         ) : null}

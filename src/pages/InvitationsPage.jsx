@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { businessApi } from '../services/api'
 
@@ -54,17 +55,33 @@ export default function InvitationsPage() {
     }
   }
 
+  const invitationsAllowed = Boolean(
+    quota &&
+      (quota.limits.invitationsPerMonth === Number.POSITIVE_INFINITY ||
+        Number(quota.limits.invitationsPerMonth) > 0),
+  )
+
   return (
     <div>
       <div className="mb-8">
         <h2 className="text-2xl font-semibold tracking-tight text-ink">Invitations</h2>
         <p className="mt-1 text-sm text-ink-muted">
           Invite customers by email to leave a review.
-          {quota
+          {quota && invitationsAllowed
             ? ` ${quota.usage.invitationsThisMonth}/${quota.limits.invitationsPerMonthLabel} used this month.`
             : ''}
         </p>
       </div>
+
+      {quota && !invitationsAllowed ? (
+        <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          Review invitations are not included on the Free plan.{' '}
+          <Link to="/subscription" className="font-semibold underline">
+            Upgrade to Starter
+          </Link>{' '}
+          or above to send invitation emails.
+        </div>
+      ) : null}
 
       {error && <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
       {success && <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{success}</div>}
@@ -81,7 +98,7 @@ export default function InvitationsPage() {
         <button
           type="submit"
           className="btn-primary"
-          disabled={sending || (quota?.remaining?.invitations === 0)}
+          disabled={sending || !invitationsAllowed || quota?.remaining?.invitations === 0}
         >
           {sending ? 'Sending...' : 'Send invite'}
         </button>
