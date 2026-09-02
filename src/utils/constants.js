@@ -27,4 +27,4 @@ export function resolveMediaUrl(path) {
 }
 
 export const LOGO_UPLOAD_HINT =
-  'PNG, JPG, or WEBP. Max 2MB. Square image recommended (400×400 or 512×512).'
+  'PNG, JPG, or WEBP · max 2MB · wide logos work best (crop is 3:1, or use full image)'
