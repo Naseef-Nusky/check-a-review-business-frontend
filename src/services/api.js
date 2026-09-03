@@ -107,6 +107,7 @@ export const businessApi = {
     api.patch(`/domains/${businessId}/${domainId}/primary`),
   removeDomain: (businessId, domainId) => api.delete(`/domains/${businessId}/${domainId}`),
   deleteBusiness: (businessId) => api.delete(`/businesses/${businessId}`),
+  reportReview: (reviewId, data) => api.post(`/reviews/${reviewId}/report`, data),
 }
 
 export { ApiError }

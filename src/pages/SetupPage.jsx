@@ -50,6 +50,8 @@ export default function SetupPage() {
   const [step, setStep] = useState(0)
   const [form, setForm] = useState({
     location: 'United Kingdom',
+    address: '',
+    postalCode: '',
     businessName: '',
     website: '',
     mainCategoryId: '',
@@ -111,7 +113,7 @@ export default function SetupPage() {
 
   const validateStep = () => {
     if (step === 0) {
-      if (!form.location || !form.businessName || !form.website || !form.mainCategoryId || !form.category) {
+      if (!form.location || !form.address || !form.businessName || !form.website || !form.mainCategoryId || !form.category) {
         return 'Please complete all business details fields.'
       }
     }
@@ -172,6 +174,8 @@ export default function SetupPage() {
         website,
         phone: `${form.phoneCode} ${form.phone}`.trim() || null,
         description: `Location: ${form.location}
+Address: ${form.address}
+ZIP / Postal code: ${form.postalCode || '—'}
 Job title: ${form.jobTitle}
 Annual revenue: ${form.annualRevenue}
 Employees: ${form.employeeCount}
@@ -236,7 +240,7 @@ Contact: ${form.firstName} ${form.lastName}`.trim(),
               {step === 0 && (
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div>
-                    <label className="label-text text-slate-700" htmlFor="location">Business location</label>
+                    <label className="label-text text-slate-700" htmlFor="location">Country</label>
                     <div className="relative">
                       <select id="location" className="input-field appearance-none pr-10" value={form.location} onChange={update('location')}>
                         {BUSINESS_LOCATIONS.map((option) => (
@@ -279,6 +283,30 @@ Contact: ${form.firstName} ${form.lastName}`.trim(),
                     <p className="mt-2 text-xs text-slate-400">
                       Enter a live website address, e.g. yourbusiness.com. We check DNS before creating the account.
                     </p>
+                  </div>
+
+                  <div>
+                    <label className="label-text text-slate-700" htmlFor="address">Address</label>
+                    <input
+                      id="address"
+                      className="input-field"
+                      value={form.address}
+                      onChange={update('address')}
+                      placeholder="Street address"
+                      autoComplete="street-address"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="label-text text-slate-700" htmlFor="postalCode">ZIP / Postal code</label>
+                    <input
+                      id="postalCode"
+                      className="input-field"
+                      value={form.postalCode}
+                      onChange={update('postalCode')}
+                      placeholder="Optional"
+                      autoComplete="postal-code"
+                    />
                   </div>
 
                   <div>

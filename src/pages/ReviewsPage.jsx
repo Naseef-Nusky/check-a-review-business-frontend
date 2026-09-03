@@ -1,7 +1,85 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { Flag, X } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { businessApi } from '../services/api'
+
+const REPORT_REASONS = [
+  'Fake or misleading review',
+  'Inappropriate or offensive content',
+  'Spam or advertising',
+  'Conflicts of interest (competitor or owner)',
+  'Contains personal or private information',
+  'Other',
+]
+
+function ReportModal({ reviewId, onClose }) {
+  const [reason, setReason] = useState('')
+  const [details, setDetails] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!reason) { setError('Please select a reason'); return }
+    setSubmitting(true)
+    setError('')
+    try {
+      await businessApi.reportReview(reviewId, { reason, details })
+      setSubmitted(true)
+    } catch (err) {
+      setError(err.message || 'Failed to submit report')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-[70] flex items-end justify-center sm:items-center sm:px-4 sm:py-10" role="dialog" aria-modal="true">
+      <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
+      <div className="relative z-10 w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-base font-semibold text-slate-900">Report this review</h2>
+            <p className="mt-0.5 text-sm text-slate-500">Our moderation team will review your report.</p>
+          </div>
+          <button type="button" onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        {submitted ? (
+          <div className="rounded-xl bg-green-50 px-4 py-5 text-center">
+            <p className="font-medium text-green-800">Report submitted</p>
+            <p className="mt-1 text-sm text-green-700">Our team will review your report shortly.</p>
+            <button type="button" onClick={onClose} className="mt-4 rounded-xl bg-green-600 px-5 py-2 text-sm font-medium text-white hover:bg-green-700">Close</button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700">Reason <span className="text-red-500">*</span></label>
+              <select className="input-field" value={reason} onChange={(e) => setReason(e.target.value)} required>
+                <option value="">Select a reason…</option>
+                {REPORT_REASONS.map((r) => <option key={r} value={r}>{r}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700">Additional details (optional)</label>
+              <textarea className="input-field min-h-[80px] resize-y" placeholder="Describe the issue…" value={details} onChange={(e) => setDetails(e.target.value)} maxLength={500} />
+            </div>
+            {error && <p className="text-sm text-red-600">{error}</p>}
+            <div className="flex justify-end gap-2 pt-1">
+              <button type="button" onClick={onClose} className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Cancel</button>
+              <button type="submit" disabled={submitting} className="rounded-xl bg-red-600 px-5 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50">
+                {submitting ? 'Submitting…' : 'Submit report'}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
+  )
+}
 
 function sentimentLabel(sentiment) {
   switch (sentiment) {
@@ -27,6 +105,7 @@ export default function ReviewsPage() {
   const [savingId, setSavingId] = useState('')
   const [canReply, setCanReply] = useState(false)
   const [planName, setPlanName] = useState('Free')
+  const [reportingId, setReportingId] = useState(null)
 
   const load = async () => {
     setLoading(true)
@@ -248,10 +327,25 @@ export default function ReviewsPage() {
                     Upgrade your plan to publish a public reply on this review.
                   </div>
                 )}
+
+                <div className="mt-3 flex justify-end border-t border-slate-100 pt-3">
+                  <button
+                    type="button"
+                    onClick={() => setReportingId(review.id)}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-white px-3 py-1.5 text-xs font-medium text-slate-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+                  >
+                    <Flag className="h-3.5 w-3.5" strokeWidth={1.5} />
+                    Report this review
+                  </button>
+                </div>
               </div>
             )
           })}
         </div>
+      )}
+
+      {reportingId && (
+        <ReportModal reviewId={reportingId} onClose={() => setReportingId(null)} />
       )}
     </div>
   )
