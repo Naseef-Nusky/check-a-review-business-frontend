@@ -133,7 +133,6 @@ export default function RespondToReviewsPage() {
         title="Start engaging with your customers today"
         description="Upgrade to Starter or above to publish public replies and show customers you listen."
         primary={{ to: '/subscription', label: 'View Starter plan' }}
-        secondary={{ to: '/setup', label: 'Create business account' }}
         secondary={{ to: '/pricing', label: 'View pricing plans' }}
       />
     </>
