@@ -42,8 +42,9 @@ const columns = [
       { label: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}` },
       { label: 'Get started', href: '/setup' },
       { label: 'Privacy', href: `${PUBLIC_SITE_URL}/privacy` },
-      { label: 'Business terms', href: `${PUBLIC_SITE_URL}/terms/business` },
-      { label: 'Reviewer terms', href: `${PUBLIC_SITE_URL}/terms` },
+      { label: 'Terms & Conditions', href: `${PUBLIC_SITE_URL}/terms` },
+      { label: 'Posting Guidelines', href: `${PUBLIC_SITE_URL}/posting-guidelines` },
+      { label: 'Cookie Policy', href: `${PUBLIC_SITE_URL}/cookies` },
     ],
   },
 ]
@@ -114,7 +115,7 @@ export default function MarketingFooter() {
             <Link to="/login" className="hover:text-white">Business login</Link>
             <Link to="/pricing" className="hover:text-white">Pricing</Link>
             <a href={`${PUBLIC_SITE_URL}/privacy`} className="hover:text-white">Privacy</a>
-            <a href={`${PUBLIC_SITE_URL}/terms/business`} className="hover:text-white">Terms</a>
+            <a href={`${PUBLIC_SITE_URL}/terms`} className="hover:text-white">Terms</a>
           </div>
         </div>
       </div>
