@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { businessApi } from '../services/api'
-import { API_BASE_URL } from '../utils/constants'
+import { API_BASE_URL, APP_NAME, PUBLIC_SITE_URL } from '../utils/constants'
 
 const WIDGET_STYLES = [
   {
@@ -90,6 +90,66 @@ export default function WidgetPage() {
     await navigator.clipboard.writeText(embedCode)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  const [seoCopied, setSeoCopied] = useState('')
+  const publicOrigin = String(PUBLIC_SITE_URL || '').replace(/\/$/, '')
+  const profileUrl = business?.slug
+    ? `${publicOrigin}/businesses/${business.slug}`
+    : business?.id
+      ? `${publicOrigin}/businesses/${business.id}`
+      : ''
+  const rating = Number(business?.average_rating || 0)
+  const reviewCount = Number(business?.review_count || 0)
+
+  const googleMetaSnippet = useMemo(() => {
+    if (!business || !profileUrl) return ''
+    const safeName = String(business.name || 'Business').replace(/"/g, '&quot;')
+    const desc = `Read ${reviewCount} verified customer review${reviewCount === 1 ? '' : 's'} for ${safeName} on ${APP_NAME}. Average rating ${rating.toFixed(1)} out of 5.`
+    return `<!-- Check A Review: place in your website <head> -->
+<meta name="check-a-review" content="${business.id}" />
+<meta name="check-a-review-profile" content="${profileUrl}" />
+<link rel="canonical" href="${profileUrl}" />
+<meta name="description" content="${desc}" />
+<script type="application/ld+json">
+${JSON.stringify(
+  {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: business.name,
+    url: profileUrl,
+    ...(business.website ? { sameAs: [business.website] } : {}),
+    ...(reviewCount > 0 && rating > 0
+      ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: Number(rating.toFixed(2)),
+            bestRating: 5,
+            worstRating: 1,
+            ratingCount: reviewCount,
+            reviewCount,
+          },
+        }
+      : {}),
+  },
+  null,
+  2,
+)}
+</script>`
+  }, [business, profileUrl, rating, reviewCount])
+
+  const copySeo = async () => {
+    if (!googleMetaSnippet) return
+    await navigator.clipboard.writeText(googleMetaSnippet)
+    setSeoCopied('snippet')
+    setTimeout(() => setSeoCopied(''), 2000)
+  }
+
+  const copyProfile = async () => {
+    if (!profileUrl) return
+    await navigator.clipboard.writeText(profileUrl)
+    setSeoCopied('profile')
+    setTimeout(() => setSeoCopied(''), 2000)
   }
 
   return (
@@ -251,6 +311,44 @@ export default function WidgetPage() {
             {copied ? 'Copied!' : 'Copy embed code'}
           </button>
         </div>
+      </div>
+
+      <div className="card mt-6 p-6">
+        <h3 className="font-semibold text-ink">Google &amp; search visibility</h3>
+        <p className="mt-1 text-sm text-ink-muted">
+          Your live Check A Review profile is what Google indexes for ratings. Add the meta snippet below to your own
+          website so search engines can connect your site to those reviews.
+        </p>
+
+        <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+          <p>
+            <strong className="font-semibold">Public profile:</strong>{' '}
+            {profileUrl ? (
+              <a href={profileUrl} target="_blank" rel="noreferrer" className="text-primary-700 hover:underline">
+                {profileUrl}
+              </a>
+            ) : (
+              'Publish your business first'
+            )}
+          </p>
+          <p className="mt-2 text-xs text-slate-500">
+            Stars in Google Ads (“seller ratings”) need Google partner approval separately. The snippet below helps your
+            website and Check A Review profile show up in organic search with ratings markup.
+          </p>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button type="button" className="btn-secondary" onClick={copyProfile} disabled={!profileUrl}>
+            {seoCopied === 'profile' ? 'Profile URL copied!' : 'Copy profile URL'}
+          </button>
+          <button type="button" className="btn-primary" onClick={copySeo} disabled={!googleMetaSnippet}>
+            {seoCopied === 'snippet' ? 'Snippet copied!' : 'Copy Google meta snippet'}
+          </button>
+        </div>
+
+        <pre className="mt-4 overflow-x-auto rounded-xl bg-slate-950 p-4 text-xs text-slate-100">
+          {googleMetaSnippet || 'Business profile required to generate your Google meta snippet.'}
+        </pre>
       </div>
     </div>
   )
