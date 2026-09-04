@@ -109,7 +109,7 @@ export default function WidgetPage() {
     return `<!-- Check A Review: place in your website <head> -->
 <meta name="check-a-review" content="${business.id}" />
 <meta name="check-a-review-profile" content="${profileUrl}" />
-<link rel="canonical" href="${profileUrl}" />
+<link rel="alternate" href="${profileUrl}" title="${safeName} reviews on ${APP_NAME}" />
 <meta name="description" content="${desc}" />
 <script type="application/ld+json">
 ${JSON.stringify(
@@ -117,8 +117,11 @@ ${JSON.stringify(
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
     name: business.name,
-    url: profileUrl,
-    ...(business.website ? { sameAs: [business.website] } : {}),
+    alternateName: `${business.name} reviews`,
+    url: business.website || profileUrl,
+    sameAs: [profileUrl, ...(business.website ? [business.website] : [])].filter(
+      (value, index, arr) => value && arr.indexOf(value) === index,
+    ),
     ...(reviewCount > 0 && rating > 0
       ? {
           aggregateRating: {
@@ -316,8 +319,8 @@ ${JSON.stringify(
       <div className="card mt-6 p-6">
         <h3 className="font-semibold text-ink">Google &amp; search visibility</h3>
         <p className="mt-1 text-sm text-ink-muted">
-          Your live Check A Review profile is what Google indexes for ratings. Add the meta snippet below to your own
-          website so search engines can connect your site to those reviews.
+          Your Check A Review profile page is what Google indexes for “business name reviews”. Add the snippet below to
+          your own website so search engines can connect your site to those reviews.
         </p>
 
         <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
