@@ -90,6 +90,24 @@ export default function PricingPage() {
 
   return (
     <div className="bg-white">
+      <section className="border-b border-primary-100 bg-primary-50/70">
+        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-4 px-4 py-5 sm:flex-row sm:items-center sm:px-6 lg:px-8">
+          <div className="max-w-3xl">
+            <p className="text-sm font-semibold text-primary-800">Free business profile</p>
+            <p className="mt-1 text-sm leading-relaxed text-slate-700 sm:text-base">
+              Yes, you can create a free business profile and register on Check A Review at no cost to manage your
+              reputation and respond to customer reviews.
+            </p>
+          </div>
+          <Link
+            to="/setup"
+            className="inline-flex shrink-0 items-center justify-center rounded-full bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-700"
+          >
+            Create free profile
+          </Link>
+        </div>
+      </section>
+
       <section className="border-b border-border bg-white">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
           <div className="mx-auto max-w-3xl text-center">
@@ -301,11 +319,12 @@ export default function PricingPage() {
             Ready to grow with more trusted reviews?
           </h2>
           <p className="mt-4 text-base leading-relaxed text-slate-300">
-            Start with a free account, then upgrade when you are ready for more invitations, more insights, and more conversion tools.
+            Create a free business profile at no cost, then upgrade when you are ready for more invitations, more
+            insights, and more conversion tools.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link to="/setup" className="inline-flex rounded-full bg-primary-500 px-8 py-3.5 text-sm font-semibold text-white hover:bg-primary-600">
-              Create free account
+              Create free profile
             </Link>
             <Link to="/contact" className="inline-flex rounded-full border border-white/20 px-8 py-3.5 text-sm font-semibold text-white hover:bg-white/10">
               Contact sales

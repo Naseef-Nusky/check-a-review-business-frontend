@@ -53,22 +53,26 @@ export default function LandingPage() {
               Get AI recommended.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600">
-              Collect verified customer reviews, respond with confidence, and make your business more visible in the age of AI-powered search.
+              Create a free business profile at no cost, collect verified customer reviews, respond with confidence,
+              and make your business more visible in the age of AI-powered search.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 to="/setup"
+                className="inline-flex items-center justify-center rounded-full bg-primary-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-primary-600"
+              >
+                Create free profile
+              </Link>
+              <Link
+                to="/pricing"
                 className="inline-flex items-center justify-center rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
               >
                 View plans
               </Link>
-              <Link
-                to="/setup"
-                className="inline-flex items-center justify-center rounded-full bg-primary-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-primary-600"
-              >
-                Get started
-              </Link>
             </div>
+            <p className="mt-4 text-sm font-medium text-primary-700">
+              Free to register · Upgrade anytime for invitations, widgets, and insights
+            </p>
           </div>
 
           <div className="relative">
@@ -275,7 +279,7 @@ export default function LandingPage() {
             },
             {
               title: 'Find the right plan for your business',
-              text: 'Starter, Plus, and Premium for every stage of growth.',
+              text: 'Start free, then choose Starter, Plus, or Premium when you need more growth tools.',
               cta: { to: '/pricing', label: 'View plans & pricing' },
               image: '/about-vision.png',
               imageAlt: 'Choosing the right Check A Review plan for your business',
@@ -353,12 +357,15 @@ export default function LandingPage() {
           <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
             Ready to unlock the full potential of reviews?
           </h2>
+          <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-white/80">
+            Create your free business profile today — no paid plan required to get started.
+          </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link to="/setup" className="inline-flex rounded-full bg-primary-500 px-8 py-3.5 text-sm font-semibold text-white hover:bg-primary-600">
-              Get started
+              Create free profile
             </Link>
-            <Link to="/setup" className="text-sm font-semibold text-white/90 hover:text-white">
-              Get a free demo
+            <Link to="/pricing" className="text-sm font-semibold text-white/90 hover:text-white">
+              Compare paid plans
             </Link>
           </div>
         </div>
