@@ -71,7 +71,7 @@ export default function LandingPage() {
               </Link>
             </div>
             <p className="mt-4 text-sm font-medium text-primary-700">
-              Free to register · Upgrade anytime for invitations, widgets, and insights
+              Free to register your business
             </p>
           </div>
 
