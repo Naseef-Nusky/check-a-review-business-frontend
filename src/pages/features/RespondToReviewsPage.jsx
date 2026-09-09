@@ -7,7 +7,7 @@ import {
   PageHero,
   StepList,
 } from '../../components/marketing/MarketingSections'
-import { ImageVisual } from '../../components/marketing/MarketingVisuals'
+import { ReplyVisual } from '../../components/marketing/MarketingVisuals'
 
 const capabilities = [
   {
@@ -70,14 +70,7 @@ export default function RespondToReviewsPage() {
         description="Write back to your customers to thank them, sort out problems, and let everyone else see the kind of business you run when something goes wrong."
         primary={{ to: '/setup', label: 'Get started free' }}
         secondary={{ to: '/pricing', label: 'View plans' }}
-        visual={
-          <ImageVisual
-            src="/Respond-to-reviews.png"
-            alt="Customer review with a public business reply"
-            className="w-full max-w-xl bg-slate-50"
-            imgClassName="h-auto w-full object-contain object-top"
-          />
-        }
+        visual={<ReplyVisual />}
       />
 
       <FeatureRow

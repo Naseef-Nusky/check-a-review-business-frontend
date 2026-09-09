@@ -1,4 +1,4 @@
-import { Search, Sparkles, Star } from 'lucide-react'
+import { Search, Star } from 'lucide-react'
 
 function Stars({ count = 5, size = 'h-3.5 w-3.5' }) {
   return (
@@ -37,29 +37,42 @@ export function ImageVisual({ src, alt, className = '', imgClassName = '' }) {
 
 export function ReplyVisual() {
   return (
-    <Frame>
-      <div className="rounded-2xl bg-slate-50 p-4">
-        <div className="flex items-center gap-2">
-          <Stars count={2} />
-          <span className="text-xs text-slate-500">2 days ago</span>
+    <div className="w-full max-w-[650px] rounded-lg border border-[#e0e0e0] bg-white p-5 font-sans shadow-elevated">
+      <div className="mb-1 text-xl font-bold text-[#1a1a1a]">Customer reviews</div>
+      <div className="mb-4 text-[13px] text-[#5f6368]">Showing 1 of 1 reviews</div>
+
+      <div className="rounded-xl border border-[#e0e0e0] bg-white p-5">
+        <div className="mb-3 flex items-center">
+          <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#fef08a] font-bold text-[#713f12]">
+            CU
+          </div>
+          <div>
+            <div className="text-[15px] font-bold text-[#1a1a1a]">Customer</div>
+            <div className="text-sm tracking-widest text-[#f59e0b]" aria-label="4 out of 5 stars">
+              ★★★★☆
+            </div>
+          </div>
         </div>
-        <p className="mt-2 text-sm font-semibold text-slate-900">Delivery arrived later than promised</p>
-        <p className="mt-1.5 text-xs leading-relaxed text-slate-600">
-          The product is good but it turned up four days after the date I was given at checkout.
-        </p>
+
+        <div className="mb-2 text-[15px] font-bold text-[#1a1a1a]">Great vibe, slightly busy</div>
+        <div className="mb-4 text-sm leading-relaxed text-[#3c4043]">
+          Really liked the coffee and desserts. Seating area is comfortable and staff are helpful. Only reason for 4
+          stars is it gets crowded around lunchtime. Still would come back. Date of experience: 2026-08-11
+        </div>
+
+        <div className="mb-4 text-xs text-[#70757a]">8/11/2026</div>
+
+        <hr className="mb-4 border-0 border-t border-[#eeeeee]" />
+
+        <div className="rounded-lg bg-[#f8f9fa] p-4">
+          <div className="mb-2 text-[11px] font-bold tracking-wide text-[#5f6368]">BUSINESS REPLY</div>
+          <div className="text-[13px] leading-relaxed text-[#3c4043]">
+            Thank you so much, Customer! We&apos;re really glad you enjoyed the cappuccino and found Harbor Lane a good
+            place to work. Our team will be happy to welcome you back anytime. See you soon!
+          </div>
+        </div>
       </div>
-      <div className="mt-3 ml-6 rounded-2xl border border-primary-100 bg-primary-50/60 p-4">
-        <p className="text-xs font-semibold text-primary-700">Reply from the business</p>
-        <p className="mt-1.5 text-xs leading-relaxed text-slate-700">
-          Thanks for flagging this — you were caught by a courier delay we have since moved away from. We have refunded
-          your shipping and would like to make the next order right.
-        </p>
-      </div>
-      <div className="mt-4 flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-xs font-medium text-white">
-        <Sparkles className="h-3.5 w-3.5" strokeWidth={1.5} />
-        Draft a reply with AI
-      </div>
-    </Frame>
+    </div>
   )
 }
 
